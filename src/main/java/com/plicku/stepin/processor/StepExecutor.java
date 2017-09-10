@@ -1,51 +1,48 @@
-package com.plicku.stepin.model;
+package com.plicku.stepin.processor;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-import com.plicku.stepin.processor.StepinProcessor;
-import lombok.Data;
+import com.plicku.stepin.anotations.DataTable;
+import com.plicku.stepin.anotations.JSONParameter;
+import com.plicku.stepin.anotations.YAMLParameter;
+import com.plicku.stepin.model.MethodParameter;
+import com.plicku.stepin.model.StepMethodProperty;
+import com.plicku.stepin.model.StepinEnums;
+import com.plicku.stepin.util.ParamDataUtil;
 import org.apache.commons.beanutils.BeanUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.plicku.stepin.processor.StepinProcessor.objectMapper;
 
-@Data
-public class MethodExecutor {
+public class StepExecutor {
 
-    StepinEnums.InstructionType instructionType;   //Givem
-    StepinEnums.StepProcessType stepProcessType;
     boolean methodToBeExecuted=false;
-    Class declaringClass;
-    Method method;
-    List<Class> paramTypes;
+    private StepMethodProperty stepMethodProperty;
     List dataTableHeaders;
-
+    StepinEnums.InstructionType instructionType;
     boolean dataTableHeadersRegistered=false;
     private List<String> dataTableDataRow;
     private List<List<String>> dataTableDataRows= new ArrayList<>();
+    private List<String> paramData = new ArrayList<>();
 
     boolean jsonStringRegistered=false;
     StringBuffer json = new StringBuffer();
-    private Type[] genericParameterTypes;
 
-    public Method getMethod() {
-        return method;
-    }
 
-    public void setMethod(Method method) {
-        this.method = method;
-        this.declaringClass=method.getDeclaringClass();
-        this.paramTypes = Arrays.asList(method.getParameterTypes());
+    public void setStepMethodProperty(Method method) {
+        this.stepMethodProperty = new StepMethodProperty(method);
         this.methodToBeExecuted=true;
-        this.genericParameterTypes = method.getGenericParameterTypes();
     }
 
+    public void addParamDataLine(String line)
+    {
+        this.paramData.add(line);
+    }
 
     public void setDataTableHeaders(String[] headers) {
     this.dataTableHeaders=Arrays.asList(headers).stream().map(String::trim).collect(Collectors.toList());
@@ -58,17 +55,36 @@ public class MethodExecutor {
     }
 
     public void executeMethod() throws InvocationTargetException, IllegalAccessException, InstantiationException, IOException, ClassNotFoundException {
+        Method method = stepMethodProperty.getMatchedMethod();
         method.setAccessible(true);
-        if(paramTypes.size()==0)
-                method.invoke(StepinProcessor.classMap.get(declaringClass));
+        if(stepMethodProperty.getMethodParameters().size()==0)
+                method.invoke(StepinProcessor.classMap.get(stepMethodProperty.getDeclaringClass()));
         else //create bean an inject
         {
             List<Object> params = new ArrayList<>();
-            for (Class aClass:paramTypes)
+
+            for (MethodParameter methodParameter :stepMethodProperty.getMethodParameters())
             {
                 Object bean = null;
+                //check if datatable
+                if(methodParameter.getArgAnnotation().contains(DataTable.class)||"\\|".startsWith(this.paramData.toString()))
+                {
+                    params.add(ParamDataUtil.getBean(this.paramData,methodParameter.getParameterType()));
+                }
+                else if(methodParameter.getArgAnnotation().contains(JSONParameter.class)||"{".startsWith(this.paramData.toString())||"[".startsWith(this.paramData.toString()))
+                {
+                    params.add(ParamDataUtil.getBeanFromJson(this.paramData,methodParameter.getParameterType()));
+                }
+                else if(methodParameter.getArgAnnotation().contains(YAMLParameter.class))
+                {
+                    params.add(ParamDataUtil.getBeanFromYaml(this.paramData,methodParameter.getParameterType()));
+                }
+                else
+                {
+                    params.add(methodParameter.getParameterType().newInstance())
+                }
                 if(dataTableHeadersRegistered){
-                    bean=aClass.newInstance();
+                    bean=methodParameter.getParameterType().newInstance();
                     for (int i = 0; i < getDataTableHeaders().size() ; i++) {
                         BeanUtils.setProperty(bean,(String)getDataTableHeaders().get(i),getDataTableDataRow().get(i));
                     }
@@ -91,5 +107,17 @@ public class MethodExecutor {
             method.invoke(StepinProcessor.classMap.get(declaringClass),params.toArray());
         }
         this.setMethodToBeExecuted(false);
+    }
+
+    public void setInstructionType(StepinEnums.InstructionType instructionType) {
+        this.instructionType = instructionType;
+    }
+
+    public boolean isMethodToBeExecuted() {
+        return methodToBeExecuted;
+    }
+
+    public void setMethodToBeExecuted(boolean methodToBeExecuted) {
+        this.methodToBeExecuted = methodToBeExecuted;
     }
 }

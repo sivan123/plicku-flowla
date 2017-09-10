@@ -33,7 +33,7 @@ public class TestStepDefinition1 {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));
     }
 
-    @Given("Test with simple bean method param")
+    @Given("Test with simple bean matchedMethod param")
     public void testWithSimpleBeanMethodParam(SimpleTestBean simpleTestBean)
     {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));
@@ -41,7 +41,7 @@ public class TestStepDefinition1 {
         Assert.assertEquals(simpleTestBean1,simpleTestBean);
     }
 
-    @Given("Test with simple bean json method param")
+    @Given("Test with simple bean json matchedMethod param")
     public void testWithSimpleBeanJsonMethodParam(SimpleTestBean simpleTestBean)
     {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));
@@ -49,7 +49,7 @@ public class TestStepDefinition1 {
         Assert.assertEquals(simpleTestBean,simpleTestBean1);
     }
 
-    @Given("Test with list of beans json method param")
+    @Given("Test with list of beans json matchedMethod param")
     public void testWithSimpleBeanJsonMethodParam(List<SimpleTestBean> simpleTestBeans)
     {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));

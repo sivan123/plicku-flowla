@@ -3,7 +3,7 @@ package com.plicku.stepin.processor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plicku.stepin.anotations.Given;
 import com.plicku.stepin.anotations.StepDefinitions;
-import com.plicku.stepin.model.MethodExecutor;
+import com.plicku.stepin.model.MethodMap;
 import com.plicku.stepin.model.StepinEnums;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public class StepinProcessor {
 
     public static Map<Class,Object> classMap = new ConcurrentHashMap<>();
-    public static Map<String,Method> methodMap = new ConcurrentHashMap();
+    public static MethodMap methodMap = new MethodMap();
     private Pattern flowKeywordPattern = Pattern.compile("Given |When |Then |And ");
     public static final ObjectMapper objectMapper = new ObjectMapper();
     String stepdefpackage;
@@ -40,7 +40,6 @@ public class StepinProcessor {
         Set<Method> methods = reflections.getMethodsAnnotatedWith(Given.class);
         methods.forEach(method -> {
             methodMap.put(method.getDeclaredAnnotation(Given.class).value(),method);
-
         });
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(StepDefinitions.class);
         for (Class aClass:classes){
@@ -66,48 +65,35 @@ public class StepinProcessor {
 
     public void process(List<String> lines) throws Exception {
 
-        MethodExecutor methodExecutor =null;
+        StepExecutor stepExecutor =null;
         for (String line:lines) {
             line=line.trim();
             if(Stream.of("Given ","When ","Then ","And ").anyMatch(line::startsWith))
             {
-                if(methodExecutor !=null && methodExecutor.isMethodToBeExecuted())
+                if(stepExecutor !=null && stepExecutor.isMethodToBeExecuted())
                 {
                     //complete previous step execution if pending
-                    methodExecutor.executeMethod();
+                    stepExecutor.executeMethod();
                 }
-                methodExecutor = new MethodExecutor();
+                stepExecutor = new StepExecutor();
                 Matcher matcher =flowKeywordPattern.matcher(line);
                 matcher.find();
                 String registeredType=matcher.group(0);
                 line = line.replaceFirst(registeredType,"").trim();
-                methodExecutor.setInstructionType(StepinEnums.InstructionType.valueOf(registeredType.trim()));
-                Method method = methodMap.get(line);
+                stepExecutor.setInstructionType(StepinEnums.InstructionType.valueOf(registeredType.trim()));
+                Method method = methodMap.get(line).getMatchedMethod();
                 if(method==null) throw new Exception("Unable to find step definition for "+line);
-                methodExecutor.setMethod(method);
+                stepExecutor.setStepMethodProperty(method);
             }
-            else if (line.startsWith("|")) //data table
+            else if(stepExecutor !=null && stepExecutor.isMethodToBeExecuted())
             {
-                //read the first row as headers
-                if(!methodExecutor.isDataTableHeadersRegistered())
-                    methodExecutor.setDataTableHeaders(StringUtils.split(line,"\\|"));
-                else
-                    methodExecutor.setDataTableData(StringUtils.split(line,"\\|"));
-            }
-            else if((line.startsWith("{")||line.startsWith("["))&& methodExecutor !=null&& methodExecutor.isMethodToBeExecuted())
-            {
-                //json
-                methodExecutor.setJsonStringRegistered(true);
-                methodExecutor.getJson().append(line);
-            }
-            else if(methodExecutor.isJsonStringRegistered())
-            {
-                methodExecutor.getJson().append(line);
+                //add data
+                stepExecutor.addParamDataLine(line);
             }
         }
-        //finish any pending method exec.
-        if(methodExecutor.isMethodToBeExecuted())
-            methodExecutor.executeMethod();
+        //finish any pending matchedMethod exec.
+        if(stepExecutor.isMethodToBeExecuted())
+            stepExecutor.executeMethod();
     }
 
 
