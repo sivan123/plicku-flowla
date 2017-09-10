@@ -1,7 +1,7 @@
 package com.plicku.stepin.model;
 
-import com.plicku.stepin.anotations.Given;
-import com.plicku.stepin.anotations.StepDefinitions;
+import com.plicku.stepin.anotations.operators.Given;
+import com.plicku.stepin.anotations.types.StepDefinitions;
 
 @StepDefinitions
 public class MethodMapStepTests {

@@ -1,4 +1,4 @@
-package com.plicku.stepin.anotations;
+package com.plicku.stepin.anotations.operators;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(value = ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface And {
+public @interface When {
 
     String value();
 

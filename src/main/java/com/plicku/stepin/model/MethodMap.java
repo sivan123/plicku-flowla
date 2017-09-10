@@ -9,16 +9,16 @@ import java.util.regex.Pattern;
 
 public class MethodMap{
 
-    private Map<String,StepMethodProperty> plainMethodMap = new ConcurrentHashMap<>();
+    private Map<String,StepMethodProperties> plainMethodMap = new ConcurrentHashMap<>();
     //cache for faster look up the second time
-    private ConcurrentHashMap<String, StepMethodProperty> cachedRegMethodMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, StepMethodProperties> cachedRegMethodMap = new ConcurrentHashMap<>();
 
     public void put(String stepname, Method method)
     {
-        plainMethodMap.put(stepname,new StepMethodProperty(method));
+        plainMethodMap.put(stepname,new StepMethodProperties(method));
     }
 
-    public StepMethodProperty get(String srchStepname)
+    public StepMethodProperties get(String srchStepname)
     {
         if(plainMethodMap.containsKey(srchStepname)) return plainMethodMap.get(srchStepname);
         else if(cachedRegMethodMap.containsKey(srchStepname)) return cachedRegMethodMap.get(srchStepname);
@@ -27,11 +27,11 @@ public class MethodMap{
             for (String stepname : plainMethodMap.keySet()) {
                 Pattern pattern = Pattern.compile(stepname);
                 if (pattern.matcher(srchStepname).matches()) {
-                    StepMethodProperty stepMethodProperty = new StepMethodProperty();
-                    stepMethodProperty.setMatchedMethod(plainMethodMap.get(stepname).getMatchedMethod());
-                    stepMethodProperty.setStepAurguments(new PatternArgumentMatcher(pattern).argumentsFrom(srchStepname));
-                    cachedRegMethodMap.put(srchStepname, stepMethodProperty);
-                    return stepMethodProperty;
+                    StepMethodProperties stepMethodProperties = new StepMethodProperties();
+                    stepMethodProperties.setMatchedMethod(plainMethodMap.get(stepname).getMatchedMethod());
+                    stepMethodProperties.setStepAurguments(new PatternArgumentMatcher(pattern).argumentsFrom(srchStepname));
+                    cachedRegMethodMap.put(srchStepname, stepMethodProperties);
+                    return stepMethodProperties;
                 }
             }
             return null;

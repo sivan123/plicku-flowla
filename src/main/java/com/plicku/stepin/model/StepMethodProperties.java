@@ -10,25 +10,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 @Setter @Getter
-public class StepMethodProperty {
-
-    String stepName;
-    String matchedStepName;
-    Method matchedMethod;
-    Class declaringClass;
-    List<Argument> stepAurguments;
-    List<MethodParameter> methodParameters = new ArrayList<>();
-    int methodArgCount;
+public class StepMethodProperties {
 
 
+    private Method matchedMethod;
+    private Class declaringClass;
+    private List<Argument> stepAurguments;
+    private List<MethodParameter> methodParameters = new ArrayList<>();
+    private String matchedStepname;
 
-    public StepMethodProperty(Method matchedMethod) {
+    private int methodArgCount;
+
+
+    int arCnt=-1;
+    public Object getNextArgValue()
+    {
+        arCnt++;
+        return stepAurguments.get(arCnt).getVal();
+    }
+
+    public StepMethodProperties(Method matchedMethod) {
         this.matchedMethod = matchedMethod;
         populateMethodArgs();
     }
 
 
-    public StepMethodProperty() {
+    public StepMethodProperties() {
     }
 
     private void populateMethodArgs()

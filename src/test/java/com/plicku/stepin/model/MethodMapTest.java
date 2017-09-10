@@ -1,6 +1,6 @@
 package com.plicku.stepin.model;
 
-import com.plicku.stepin.anotations.Given;
+import com.plicku.stepin.anotations.operators.Given;
 import com.plicku.stepin.processor.StepinProcessor;
 import org.junit.Before;
 import org.junit.Test;

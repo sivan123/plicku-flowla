@@ -1,8 +1,8 @@
 package com.plicku.stepin.processor.stepdefs;
 
-import com.plicku.stepin.anotations.Given;
-import com.plicku.stepin.anotations.JSONParameter;
-import com.plicku.stepin.anotations.StepDefinitions;
+import com.plicku.stepin.anotations.operators.Given;
+import com.plicku.stepin.anotations.parameters.JSONParameter;
+import com.plicku.stepin.anotations.types.StepDefinitions;
 import com.plicku.stepin.processor.beans.SimpleTestBean;
 
 @StepDefinitions

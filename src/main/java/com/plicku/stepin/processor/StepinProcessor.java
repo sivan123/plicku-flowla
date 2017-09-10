@@ -1,10 +1,12 @@
 package com.plicku.stepin.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.plicku.stepin.anotations.Given;
-import com.plicku.stepin.anotations.StepDefinitions;
+import com.plicku.stepin.anotations.operators.Given;
+import com.plicku.stepin.anotations.types.StepDefinitions;
 import com.plicku.stepin.model.MethodMap;
-import com.plicku.stepin.model.StepinEnums;
+import com.plicku.stepin.model.StepMethodProperties;
+import com.plicku.stepin.model.contexts.GlobalContext;
+import com.plicku.stepin.model.contexts.SequenceContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -25,6 +27,7 @@ import java.util.stream.Stream;
 
 public class StepinProcessor {
 
+    public static GlobalContext globalContext = new GlobalContext();
     public static Map<Class,Object> classMap = new ConcurrentHashMap<>();
     public static MethodMap methodMap = new MethodMap();
     private Pattern flowKeywordPattern = Pattern.compile("Given |When |Then |And ");
@@ -65,6 +68,7 @@ public class StepinProcessor {
 
     public void process(List<String> lines) throws Exception {
 
+        SequenceContext sequenceContext = new SequenceContext();
         StepExecutor stepExecutor =null;
         for (String line:lines) {
             line=line.trim();
@@ -73,17 +77,16 @@ public class StepinProcessor {
                 if(stepExecutor !=null && stepExecutor.isMethodToBeExecuted())
                 {
                     //complete previous step execution if pending
-                    stepExecutor.executeMethod();
+                    stepExecutor.executeMethod(sequenceContext);
                 }
                 stepExecutor = new StepExecutor();
                 Matcher matcher =flowKeywordPattern.matcher(line);
                 matcher.find();
                 String registeredType=matcher.group(0);
                 line = line.replaceFirst(registeredType,"").trim();
-                stepExecutor.setInstructionType(StepinEnums.InstructionType.valueOf(registeredType.trim()));
-                Method method = methodMap.get(line).getMatchedMethod();
-                if(method==null) throw new Exception("Unable to find step definition for "+line);
-                stepExecutor.setStepMethodProperty(method);
+                StepMethodProperties stepMethodProperties = methodMap.get(line);
+                if(stepMethodProperties ==null) throw new Exception("Unable to find step definition for "+line);
+                stepExecutor.setStepMethodProperties(stepMethodProperties);
             }
             else if(stepExecutor !=null && stepExecutor.isMethodToBeExecuted())
             {
@@ -93,7 +96,7 @@ public class StepinProcessor {
         }
         //finish any pending matchedMethod exec.
         if(stepExecutor.isMethodToBeExecuted())
-            stepExecutor.executeMethod();
+            stepExecutor.executeMethod(sequenceContext);
     }
 
 

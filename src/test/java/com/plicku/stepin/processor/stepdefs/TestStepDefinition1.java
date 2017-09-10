@@ -1,14 +1,12 @@
 package com.plicku.stepin.processor.stepdefs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.plicku.stepin.anotations.Given;
-import com.plicku.stepin.anotations.StepDefinitions;
+import com.plicku.stepin.anotations.operators.Given;
+import com.plicku.stepin.anotations.types.StepDefinitions;
 import com.plicku.stepin.processor.MethodCallRegistryEntry;
 import com.plicku.stepin.processor.StepinProcessor;
 import com.plicku.stepin.processor.StepinProcessorTest;
 import com.plicku.stepin.processor.beans.SimpleTestBean;
-import org.apache.commons.beanutils.BeanUtils;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Assert;
 
 import java.util.ArrayList;
