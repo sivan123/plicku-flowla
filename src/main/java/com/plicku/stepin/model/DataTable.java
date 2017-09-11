@@ -11,8 +11,8 @@ public class DataTable {
     public List<List<Object>> datatable = new ArrayList<>();
 
     public DataTable(List<String> datalines) {
-        datalines.forEach(line -> {
-           datatable.add(Arrays.asList(StringUtils.split("\\|")));
+        datalines.forEach((String line) -> {
+           if(!"".equals(line.trim())) datatable.add(Arrays.asList(StringUtils.split(line,"\\|")));
         });
     }
 
@@ -68,9 +68,9 @@ public class DataTable {
         else
         {
             T bean = beanType.newInstance();
+            int i =0;
             for(Object list :datatable.get(0))
             {
-                int i =0;
                 BeanUtils.setProperty(bean,list.toString(),elementAt(1,i));
                 i++;
             }

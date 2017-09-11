@@ -47,11 +47,13 @@ public class StepExecutor {
                 Object bean = null;
                 //check if datatable
 
-                if((methodParameter.getArgAnnotation()!=null&&methodParameter.getArgAnnotation().contains(DataTable.class))||"\\|".startsWith(this.paramData.toString()))
+                if((methodParameter.getArgAnnotation()!=null&&methodParameter.getArgAnnotation().contains(DataTable.class))||
+                        (this.paramData.get(0)!=null && this.paramData.get(0).startsWith("|")))
                 {
                     params.add(ParamDataUtil.getBean(this.paramData,methodParameter.getParameterType()));
                 }
-                else if((methodParameter.getArgAnnotation()!=null&&methodParameter.getArgAnnotation().contains(JSONParameter.class))||"{".startsWith(this.paramData.toString())||"[".startsWith(this.paramData.toString()))
+                else if((methodParameter.getArgAnnotation()!=null&&methodParameter.getArgAnnotation().contains(JSONParameter.class))||
+                        (this.paramData.get(0)!=null && ((this.paramData.get(0).startsWith("["))||(this.paramData.get(0).startsWith("{")))))
                 {
                     params.add(ParamDataUtil.getBeanFromJson(this.paramData,methodParameter.getParameterType()));
                 }
