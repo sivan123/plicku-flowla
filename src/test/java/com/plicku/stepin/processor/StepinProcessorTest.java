@@ -34,6 +34,12 @@ public class StepinProcessorTest {
         stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-stepforward\\src\\test\\resources\\test2regex.sequence"));
     }
 
+    @Test
+    public void methodMapWIthYamlBeanAndStringArgAndIntegerArg() throws Exception{
+        StepinProcessor stepinProcessor = new StepinProcessor("com.plicku.stepin.processor.stepdefs");
+        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-stepforward\\src\\test\\resources\\test2regex.sequence"));
+    }
+
 
 
 }

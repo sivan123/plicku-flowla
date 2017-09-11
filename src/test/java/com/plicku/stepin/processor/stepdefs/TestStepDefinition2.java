@@ -8,7 +8,7 @@ import com.plicku.stepin.processor.beans.SimpleTestBean;
 @StepDefinitions
 public class TestStepDefinition2 {
 
-   @Given("Given I have (\\d+) (.*) in my basket")
+   @Given("I have (\\d+) (.*) in my basket")
     public void givenIhaveInMyBasket(int number, String item)
    {
        System.out.println(number + item);
@@ -19,5 +19,13 @@ public class TestStepDefinition2 {
     public void givenJsonAnnotatedWithPrimitiveParam(@JSONParameter SimpleTestBean simpleTestBean, int item)
     {
 
+    }
+
+    @Given("Test with simple bean yaml matchedMethod param and a string arg with value (.*) and  Integer Arg with value (\\d+)")
+    public void methodMapWIthYamlBeanAndStringArgAndIntegerArg(SimpleTestBean simpleTestBean,String param1,String param2)
+    {
+        System.out.println(simpleTestBean);
+        System.out.println(param1);
+        System.out.println(param2);
     }
 }

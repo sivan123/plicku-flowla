@@ -2,6 +2,7 @@ package com.plicku.stepin.model;
 
 import com.plicku.stepin.anotations.operators.Given;
 import com.plicku.stepin.anotations.types.StepDefinitions;
+import com.plicku.stepin.processor.beans.SimpleTestBean;
 
 @StepDefinitions
 public class MethodMapStepTests {
@@ -22,4 +23,6 @@ public class MethodMapStepTests {
     {
 
     }
+
+
 }
