@@ -1,8 +1,11 @@
 package com.plicku.stepin.model;
 
+import com.plicku.stepin.model.contexts.GlobalContext;
+import com.plicku.stepin.model.contexts.SequenceContext;
 import com.plicku.stepin.util.Argument;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.beanutils.ConvertUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -18,22 +21,28 @@ public class StepMethodProperties {
     private List<Argument> stepAurguments;
     private List<MethodParameter> methodParameters = new ArrayList<>();
     private String matchedStepname;
-
     private int methodArgCount;
+    private String stepName;
 
 
-    int arCnt=-1;
-    public Object getNextArgValue()
-    {
-        arCnt++;
-        return stepAurguments.get(arCnt).getVal();
+    public Object getNextArgValue(Object currArgValue, Class parameterType) {
+        if(currArgValue==null)
+            return ConvertUtils.convert(stepAurguments.get(0).getVal(),parameterType);
+        else
+            return ConvertUtils.convert(stepAurguments.get(stepAurguments.indexOf(currArgValue)+1).getVal(),parameterType);
     }
 
-    public StepMethodProperties(Method matchedMethod) {
+
+    public StepMethodProperties(Method matchedMethod,String stepName) {
         this.matchedMethod = matchedMethod;
+        this.stepName=stepName;
         populateMethodArgs();
     }
 
+    public int getNonContextParamSize()
+    {
+        return (int) methodParameters.stream().filter(methodParameter -> {return  !methodParameter.equals(GlobalContext.class)&&!methodParameter.equals(SequenceContext.class);}).count();
+    }
 
     public StepMethodProperties() {
     }
@@ -42,9 +51,9 @@ public class StepMethodProperties {
     {
         this.declaringClass=this.matchedMethod.getDeclaringClass();
         for (int i = 0; i < this.matchedMethod.getParameterTypes().length; i++) {
-            MethodParameter argument = new MethodParameter();
-            argument.setParameterType(this.matchedMethod.getParameterTypes()[i]);
-            methodParameters.add(argument);
+            MethodParameter parameter = new MethodParameter();
+            parameter.setParameterType(this.matchedMethod.getParameterTypes()[i]);
+            methodParameters.add(parameter);
         }
         Annotation[][] annotations =  this.matchedMethod.getParameterAnnotations();
         for (int i = 0; i < annotations.length ; i++) {
@@ -55,5 +64,10 @@ public class StepMethodProperties {
         }
         this.methodArgCount=this.matchedMethod.getParameterCount();
     }
+
+    public void setStepName(String stepName) {
+        this.stepName = stepName;
+    }
+
 
 }

@@ -15,7 +15,7 @@ public class MethodMap{
 
     public void put(String stepname, Method method)
     {
-        plainMethodMap.put(stepname,new StepMethodProperties(method));
+        plainMethodMap.put(stepname,new StepMethodProperties(method,stepname));
     }
 
     public StepMethodProperties get(String srchStepname)
@@ -27,8 +27,7 @@ public class MethodMap{
             for (String stepname : plainMethodMap.keySet()) {
                 Pattern pattern = Pattern.compile(stepname);
                 if (pattern.matcher(srchStepname).matches()) {
-                    StepMethodProperties stepMethodProperties = new StepMethodProperties();
-                    stepMethodProperties.setMatchedMethod(plainMethodMap.get(stepname).getMatchedMethod());
+                    StepMethodProperties stepMethodProperties = new StepMethodProperties(plainMethodMap.get(stepname).getMatchedMethod(),srchStepname);
                     stepMethodProperties.setStepAurguments(new PatternArgumentMatcher(pattern).argumentsFrom(srchStepname));
                     cachedRegMethodMap.put(srchStepname, stepMethodProperties);
                     return stepMethodProperties;

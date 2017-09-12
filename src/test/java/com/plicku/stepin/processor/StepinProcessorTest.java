@@ -1,6 +1,7 @@
 package com.plicku.stepin.processor;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -8,6 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StepinProcessorTest {
+
+    static StepinProcessor stepinProcessor;
+
+    @BeforeClass
+    public static void init() throws InstantiationException, IllegalAccessException {
+        stepinProcessor = new StepinProcessor("com.plicku.stepin.processor.stepdefs");
+    }
 
     public static List<MethodCallRegistryEntry> methodRegistryExp = new ArrayList<>();
     public static List<MethodCallRegistryEntry> methodRegistryAct = new ArrayList<>();
@@ -21,22 +29,19 @@ public class StepinProcessorTest {
         methodRegistryExp.add(new MethodCallRegistryEntry("Simple When Test",true));
         methodRegistryExp.add(new MethodCallRegistryEntry("Test with list of beans json matchedMethod param",true));
 
-        StepinProcessor stepinProcessor = new StepinProcessor("com.plicku.stepin.processor.stepdefs");
-        stepinProcessor.process(new File("D:\\development\\plicku\\plicku-stepforward\\src\\test\\resources\\test1.sequence"));
 
+        stepinProcessor.process(new File("D:\\development\\plicku\\plicku-stepforward\\src\\test\\resources\\test1.sequence"));
         Assert.assertEquals("Method Call expectation failed",methodRegistryExp,methodRegistryAct);
     }
 
     @Test
     public void testRegexExpressions() throws Exception {
 
-        StepinProcessor stepinProcessor = new StepinProcessor("com.plicku.stepin.processor.stepdefs");
         stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-stepforward\\src\\test\\resources\\test2regex.sequence"));
     }
 
     @Test
     public void methodMapWIthYamlBeanAndStringArgAndIntegerArg() throws Exception{
-        StepinProcessor stepinProcessor = new StepinProcessor("com.plicku.stepin.processor.stepdefs");
         stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-stepforward\\src\\test\\resources\\test2regex.sequence"));
     }
 

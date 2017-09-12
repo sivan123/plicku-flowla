@@ -1,10 +1,10 @@
 Given I have 10 eggs in my basket
 
-Given Test with simple bean json matchedMethod param and a string arg with value 10
+Given Test with simple bean json matchedMethod param and a int arg with value 10
 {"name":"TestName",
 "address1":"TestAddress1","zip":30878}
 
 Given Test with simple bean yaml matchedMethod param and a string arg with value testing and  Integer Arg with value 15
-name:TestName
-address1:TestAddress1
-zip:30878
+name: TestName
+address1: TestAddress1
+zip: 30878

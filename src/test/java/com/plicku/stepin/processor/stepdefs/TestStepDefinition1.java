@@ -2,6 +2,8 @@ package com.plicku.stepin.processor.stepdefs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.plicku.stepin.anotations.operators.Given;
+import com.plicku.stepin.anotations.parameters.DataTableParameter;
+import com.plicku.stepin.anotations.parameters.JSONParameter;
 import com.plicku.stepin.anotations.types.StepDefinitions;
 import com.plicku.stepin.processor.MethodCallRegistryEntry;
 import com.plicku.stepin.processor.StepinProcessor;
@@ -32,7 +34,7 @@ public class TestStepDefinition1 {
     }
 
     @Given("Test with simple bean matchedMethod param")
-    public void testWithSimpleBeanMethodParam(SimpleTestBean simpleTestBean)
+    public void testWithSimpleBeanMethodParam(@DataTableParameter SimpleTestBean simpleTestBean)
     {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));
         SimpleTestBean simpleTestBean1 = new SimpleTestBean("TestName","TestAddress1",30878);
@@ -40,7 +42,7 @@ public class TestStepDefinition1 {
     }
 
     @Given("Test with simple bean json matchedMethod param")
-    public void testWithSimpleBeanJsonMethodParam(SimpleTestBean simpleTestBean)
+    public void testWithSimpleBeanJsonMethodParam(@JSONParameter SimpleTestBean simpleTestBean)
     {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));
         SimpleTestBean simpleTestBean1 = new SimpleTestBean("TestName","TestAddress1",30878);
@@ -48,7 +50,7 @@ public class TestStepDefinition1 {
     }
 
     @Given("Test with list of beans json matchedMethod param")
-    public void testWithSimpleBeanJsonMethodParam(List<SimpleTestBean> simpleTestBeans)
+    public void testWithSimpleBeanJsonMethodParam(@JSONParameter List<SimpleTestBean> simpleTestBeans)
     {
         StepinProcessorTest.methodRegistryAct.add(new MethodCallRegistryEntry(new Object(){}.getClass().getEnclosingMethod().getDeclaredAnnotation(Given.class).value(),true));
         List<SimpleTestBean> pojos = StepinProcessor.objectMapper.convertValue(simpleTestBeans, new TypeReference<List<SimpleTestBean>>() { });

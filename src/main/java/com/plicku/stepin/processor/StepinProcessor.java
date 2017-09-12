@@ -32,6 +32,7 @@ public class StepinProcessor {
     public static MethodMap methodMap = new MethodMap();
     private Pattern flowKeywordPattern = Pattern.compile("Given |When |Then |And ");
     public static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final String COMMENT="#";
     String stepdefpackage;
 
 
@@ -71,27 +72,29 @@ public class StepinProcessor {
         SequenceContext sequenceContext = new SequenceContext();
         StepExecutor stepExecutor =null;
         for (String line:lines) {
-            line=line.trim();
-            if(Stream.of("Given ","When ","Then ","And ").anyMatch(line::startsWith))
-            {
-                if(stepExecutor !=null && stepExecutor.isMethodToBeExecuted())
-                {
-                    //complete previous step execution if pending
-                    stepExecutor.executeMethod(sequenceContext);
+            try{
+            if (!line.startsWith(COMMENT)) {
+                if (Stream.of("Given ", "When ", "Then ", "And ").anyMatch(line.trim()::startsWith)) {
+                    if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                        //complete previous step execution if pending
+                        stepExecutor.executeMethod(sequenceContext);
+                    }
+                    stepExecutor = new StepExecutor();
+                    Matcher matcher = flowKeywordPattern.matcher(line);
+                    matcher.find();
+                    String registeredType = matcher.group(0);
+                    line = line.replaceFirst(registeredType, "").trim();
+                    StepMethodProperties stepMethodProperties = methodMap.get(line);
+                    if (stepMethodProperties == null) throw new Exception("Unable to find step definition for " + line);
+                    stepExecutor.setStepMethodProperties(stepMethodProperties);
+                } else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                    //add data
+                    stepExecutor.addParamDataLine(line);
                 }
-                stepExecutor = new StepExecutor();
-                Matcher matcher =flowKeywordPattern.matcher(line);
-                matcher.find();
-                String registeredType=matcher.group(0);
-                line = line.replaceFirst(registeredType,"").trim();
-                StepMethodProperties stepMethodProperties = methodMap.get(line);
-                if(stepMethodProperties ==null) throw new Exception("Unable to find step definition for "+line);
-                stepExecutor.setStepMethodProperties(stepMethodProperties);
             }
-            else if(stepExecutor !=null && stepExecutor.isMethodToBeExecuted())
-            {
-                //add data
-                stepExecutor.addParamDataLine(line);
+            }catch (Exception e){
+                System.out.println("Exception Processing "+line);
+                e.printStackTrace();
             }
         }
         //finish any pending matchedMethod exec.
