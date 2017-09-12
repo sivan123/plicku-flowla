@@ -30,19 +30,19 @@ public class StepinProcessorTest {
         methodRegistryExp.add(new MethodCallRegistryEntry("Test with list of beans json matchedMethod param",true));
 
 
-        stepinProcessor.process(new File("D:\\development\\plicku\\plicku-stepforward\\src\\test\\resources\\test1.sequence"));
+        stepinProcessor.process(new File("D:\\development\\plicku\\plicku-flowla\\src\\test\\resources\\test1.flowla"));
         Assert.assertEquals("Method Call expectation failed",methodRegistryExp,methodRegistryAct);
     }
 
     @Test
     public void testRegexExpressions() throws Exception {
 
-        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-stepforward\\src\\test\\resources\\test2regex.sequence"));
+        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\test2regex.flowla"));
     }
 
     @Test
     public void methodMapWIthYamlBeanAndStringArgAndIntegerArg() throws Exception{
-        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-stepforward\\src\\test\\resources\\test2regex.sequence"));
+        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\test2regex.flowla"));
     }
 
 
