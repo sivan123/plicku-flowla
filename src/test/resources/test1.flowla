@@ -1,7 +1,6 @@
 Given Simple Given Test
 When Simple When Test
 
-
 Given Test with simple bean matchedMethod param
 |name|address1|zip|
 |TestName|TestAddress1|30878|

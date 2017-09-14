@@ -1,7 +1,10 @@
 package com.plicku.flowla.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.plicku.flowla.anotations.operators.And;
 import com.plicku.flowla.anotations.operators.Given;
+import com.plicku.flowla.anotations.operators.Then;
+import com.plicku.flowla.anotations.operators.When;
 import com.plicku.flowla.anotations.types.StepDefinitions;
 import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
@@ -41,10 +44,8 @@ public class StepinProcessor {
     public StepinProcessor(String stepdefpackage) throws IllegalAccessException, InstantiationException {
      this.stepdefpackage=stepdefpackage;
         Reflections reflections = new Reflections(stepdefpackage, new MethodAnnotationsScanner(),new TypeAnnotationsScanner(), new SubTypesScanner());
-        Set<Method> methods = reflections.getMethodsAnnotatedWith(Given.class);
-        methods.forEach(method -> {
-            methodMap.put(method.getDeclaredAnnotation(Given.class).value(),method);
-        });
+        loadMethodsForOperators(reflections);
+
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(StepDefinitions.class);
         for (Class aClass:classes){
             Object o = aClass.newInstance();
@@ -52,6 +53,31 @@ public class StepinProcessor {
         }
 
     }
+
+    private void loadMethodsForOperators(Reflections reflections){
+
+        Set<Method> methods = reflections.getMethodsAnnotatedWith(And.class);
+        methods.forEach(method -> {
+            methodMap.put(method.getDeclaredAnnotation(And.class).value(),method);
+        });
+
+        methods = reflections.getMethodsAnnotatedWith(Given.class);
+        methods.forEach(method -> {
+            methodMap.put(method.getDeclaredAnnotation(Given.class).value(),method);
+        });
+
+        methods = reflections.getMethodsAnnotatedWith(Then.class);
+        methods.forEach(method -> {
+            methodMap.put(method.getDeclaredAnnotation(Then.class).value(),method);
+        });
+
+        methods = reflections.getMethodsAnnotatedWith(When.class);
+        methods.forEach(method -> {
+            methodMap.put(method.getDeclaredAnnotation(When.class).value(),method);
+        });
+
+    }
+
     private StepinProcessor(){}
 
     public void process(String stepinfileString) throws Exception {
