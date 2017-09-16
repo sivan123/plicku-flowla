@@ -1,6 +1,7 @@
 package com.plicku.flowla.processor.stepdefs;
 
 import com.plicku.flowla.anotations.operators.Given;
+import com.plicku.flowla.anotations.operators.If;
 import com.plicku.flowla.anotations.parameters.JSONParameter;
 import com.plicku.flowla.anotations.parameters.YAMLParameter;
 import com.plicku.flowla.anotations.types.StepDefinitions;
@@ -28,5 +29,18 @@ public class TestStepDefinition2 {
         System.out.println(simpleTestBean);
         System.out.println(param1);
         System.out.println(param2);
+    }
+
+    @If("Testing (\\d+) plus (\\d+) equals (\\d+)")
+    public boolean additionCheck(int x,int y,int z)
+    {
+        if((x+y)==z) {
+            System.out.println("calculated to true");
+            return true;
+        }
+        else {
+            System.out.println("calculated to false");
+            return false;
+        }
     }
 }

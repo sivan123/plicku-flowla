@@ -45,6 +45,10 @@ public class StepinProcessorTest {
         stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\test2regex.flowla"));
     }
 
+    @Test
+    public void ifTest() throws Exception{
+        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\ifTest.flowla"));
+    }
 
 
 }

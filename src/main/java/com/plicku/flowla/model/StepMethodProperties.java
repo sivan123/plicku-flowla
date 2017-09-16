@@ -23,6 +23,7 @@ public class StepMethodProperties {
     private String matchedStepname;
     private int methodArgCount;
     private String stepName;
+    private String keyword;
 
 
     public Object getNextArgValue(Object currArgValue, Class parameterType) {

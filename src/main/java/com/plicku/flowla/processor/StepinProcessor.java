@@ -1,10 +1,7 @@
 package com.plicku.flowla.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.plicku.flowla.anotations.operators.And;
-import com.plicku.flowla.anotations.operators.Given;
-import com.plicku.flowla.anotations.operators.Then;
-import com.plicku.flowla.anotations.operators.When;
+import com.plicku.flowla.anotations.operators.*;
 import com.plicku.flowla.anotations.types.StepDefinitions;
 import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
@@ -26,15 +23,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static com.plicku.flowla.util.Constants.ELSE_IF;
-import static com.plicku.flowla.util.Constants.END_IF;
+import static com.plicku.flowla.util.Constants.*;
 
 public class StepinProcessor {
 
     public static GlobalContext globalContext = new GlobalContext();
     public static Map<Class,Object> classMap = new ConcurrentHashMap<>();
     public static MethodMap methodMap = new MethodMap();
-    private Pattern flowKeywordPattern = Pattern.compile("Given |When |Then |And ");
+    private Pattern flowKeywordPattern = Pattern.compile("Given |When |Then |And |If |End If|Else If");
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final String COMMENT="#";
     String stepdefpackage;
@@ -77,6 +73,11 @@ public class StepinProcessor {
             methodMap.put(method.getDeclaredAnnotation(When.class).value(),method);
         });
 
+        methods = reflections.getMethodsAnnotatedWith(If.class);
+        methods.forEach(method -> {
+            methodMap.put(method.getDeclaredAnnotation(If.class).value(),method);
+        });
+
     }
 
     private StepinProcessor(){}
@@ -98,24 +99,56 @@ public class StepinProcessor {
 
         SequenceContext sequenceContext = new SequenceContext();
         StepExecutor stepExecutor =null;
-        Boolean ifRegistered= false;
+        Boolean ifElseEligibleBlockBeginRegistered= false;
+        Boolean ifToProcess=false;
         List<String> ifLinesToExecute = new ArrayList<>();
         List<String> ElseifLinesToExecute = new ArrayList<>();
         for (String line:lines) {
             try{
             if (!line.startsWith(COMMENT)) {
-                if (Stream.of("Given ", "When ", "Then ", "And ").anyMatch(line.trim()::startsWith) && !Stream.of(END_IF,ELSE_IF).anyMatch(line.trim()::equals)) {
-                    if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                if (KEYWORDS.stream().anyMatch(line.trim()::startsWith)) {
+
+                    if(ifElseEligibleBlockBeginRegistered && !(line.startsWith(END_IF)||(line.startsWith(ELSE_IF))))
+                    {
+                        //process if blocks
+                        process(ifLinesToExecute);
+                        ifElseEligibleBlockBeginRegistered=false;
+                        ifToProcess=false;
+                        ifLinesToExecute = new ArrayList<>();
+                    }
+                    else if(ifElseEligibleBlockBeginRegistered)
+                    {
+                        ifLinesToExecute.add(line);
+                    }
+                    else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                         //complete previous step execution if pending
-                        stepExecutor.executeMethod(sequenceContext);
+                        if(IF.equals(stepExecutor.getKeyword())||ELSE_IF.equals(stepExecutor.getKeyword()))
+                        {
+                            Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext);
+                            if(if_elseif_result)
+                            {
+                                ifElseEligibleBlockBeginRegistered=true;
+                            }
+                            else {
+                                continue;
+                            }
+
+                        }
+                        else
+                        {
+                            stepExecutor.executeMethod(sequenceContext);
+                        }
                     }
                     stepExecutor = new StepExecutor();
                     Matcher matcher = flowKeywordPattern.matcher(line);
                     matcher.find();
-                    String registeredType = matcher.group(0);
-                    line = line.replaceFirst(registeredType, "").trim();
+                    String keyword = matcher.group(0);
+                    line = line.replaceFirst(keyword, "").trim();
                     StepMethodProperties stepMethodProperties = methodMap.get(line);
                     if (stepMethodProperties == null) throw new Exception("Unable to find step definition for " + line);
+                    stepMethodProperties.setKeyword(keyword);
+                    if(IF.equals(keyword))
+                        ifToProcess=true;
                     stepExecutor.setStepMethodProperties(stepMethodProperties);
                 }
                 else if(line.trim().startsWith(Constants.IF))
@@ -125,15 +158,11 @@ public class StepinProcessor {
                         stepExecutor.executeMethod(sequenceContext);
                     }
                     stepExecutor = getStepExecutor(line);
-                    ifRegistered=true;
+                    ifElseEligibleBlockBeginRegistered=true;
                 }
-                else if(line.trim().startsWith(Constants.ELSE_IF))
+                else if(ifElseEligibleBlockBeginRegistered)
                 {
-
-
-                }
-                else if(line.trim().equalsIgnoreCase(END_IF)){
-
+                    ifLinesToExecute.add(line);
                 }
                 else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                     //add data
@@ -146,6 +175,8 @@ public class StepinProcessor {
             }
         }
         //finish any pending matchedMethod exec.
+        if(ifToProcess)
+            throw new Exception("If block not closed. Make sure to close if with End If");
         if(stepExecutor.isMethodToBeExecuted())
             stepExecutor.executeMethod(sequenceContext);
     }

@@ -22,6 +22,11 @@ public class StepExecutor {
 
 
 
+    public String getKeyword()
+    {
+        return stepMethodProperties.getKeyword();
+    }
+
     public void setStepMethodProperties(StepMethodProperties stepMethodProperties) {
         this.stepMethodProperties = stepMethodProperties;
         this.methodToBeExecuted=true;
@@ -32,12 +37,13 @@ public class StepExecutor {
         this.paramData.add(line);
     }
 
-    public void executeMethod(SequenceContext sequenceContext) throws Exception {
+    public Object executeMethod(SequenceContext sequenceContext) throws Exception {
+        Object returnValue= null;
        try {
            Method method = stepMethodProperties.getMatchedMethod();
            method.setAccessible(true);
            if (stepMethodProperties.getMethodParameters().size() == 0)
-               method.invoke(StepinProcessor.classMap.get(stepMethodProperties.getDeclaringClass()));
+               returnValue= method.invoke(StepinProcessor.classMap.get(stepMethodProperties.getDeclaringClass()));
            else //create bean an inject
            {
                List<Object> params = new ArrayList<>();
@@ -65,13 +71,14 @@ public class StepExecutor {
                        params.add(currArgValue);
                    }
                }
-               method.invoke(StepinProcessor.classMap.get(this.stepMethodProperties.getDeclaringClass()), params.toArray());
+               returnValue= method.invoke(StepinProcessor.classMap.get(this.stepMethodProperties.getDeclaringClass()), params.toArray());
            }
            this.setMethodToBeExecuted(false);
        }catch (Exception e){
            throw new Exception("Error Executiing step "+stepMethodProperties.getStepName(),e);
        }
 
+        return returnValue;
     }
 
     public boolean isMethodToBeExecuted() {
