@@ -10,6 +10,7 @@ import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
 import com.plicku.flowla.model.contexts.GlobalContext;
 import com.plicku.flowla.model.contexts.SequenceContext;
+import com.plicku.flowla.util.Constants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -19,14 +20,14 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static com.plicku.flowla.util.Constants.ELSE_IF;
+import static com.plicku.flowla.util.Constants.END_IF;
 
 public class StepinProcessor {
 
@@ -97,10 +98,13 @@ public class StepinProcessor {
 
         SequenceContext sequenceContext = new SequenceContext();
         StepExecutor stepExecutor =null;
+        Boolean ifRegistered= false;
+        List<String> ifLinesToExecute = new ArrayList<>();
+        List<String> ElseifLinesToExecute = new ArrayList<>();
         for (String line:lines) {
             try{
             if (!line.startsWith(COMMENT)) {
-                if (Stream.of("Given ", "When ", "Then ", "And ").anyMatch(line.trim()::startsWith)) {
+                if (Stream.of("Given ", "When ", "Then ", "And ").anyMatch(line.trim()::startsWith) && !Stream.of(END_IF,ELSE_IF).anyMatch(line.trim()::equals)) {
                     if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                         //complete previous step execution if pending
                         stepExecutor.executeMethod(sequenceContext);
@@ -113,7 +117,25 @@ public class StepinProcessor {
                     StepMethodProperties stepMethodProperties = methodMap.get(line);
                     if (stepMethodProperties == null) throw new Exception("Unable to find step definition for " + line);
                     stepExecutor.setStepMethodProperties(stepMethodProperties);
-                } else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                }
+                else if(line.trim().startsWith(Constants.IF))
+                {
+                    if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                        //complete previous step execution if pending
+                        stepExecutor.executeMethod(sequenceContext);
+                    }
+                    stepExecutor = getStepExecutor(line);
+                    ifRegistered=true;
+                }
+                else if(line.trim().startsWith(Constants.ELSE_IF))
+                {
+
+
+                }
+                else if(line.trim().equalsIgnoreCase(END_IF)){
+
+                }
+                else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                     //add data
                     stepExecutor.addParamDataLine(line);
                 }
@@ -126,6 +148,19 @@ public class StepinProcessor {
         //finish any pending matchedMethod exec.
         if(stepExecutor.isMethodToBeExecuted())
             stepExecutor.executeMethod(sequenceContext);
+    }
+
+    private StepExecutor getStepExecutor(String line) throws Exception
+    {
+        StepExecutor stepExecutor = new StepExecutor();
+        Matcher matcher = flowKeywordPattern.matcher(line);
+        matcher.find();
+        String registeredType = matcher.group(0);
+        line = line.replaceFirst(registeredType, "").trim();
+        StepMethodProperties stepMethodProperties = methodMap.get(line);
+        if (stepMethodProperties == null) throw new Exception("Unable to find step definition for " + line);
+        stepExecutor.setStepMethodProperties(stepMethodProperties);
+        return stepExecutor;
     }
 
 
