@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,24 +31,25 @@ public class StepinProcessorTest {
         methodRegistryExp.add(new MethodCallRegistryEntry("Test with list of beans json matchedMethod param",true));
 
 
-        stepinProcessor.process(new File("D:\\development\\plicku\\plicku-flowla\\src\\test\\resources\\test1.flowla"));
+        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("test1.flowla").getFile()));
         Assert.assertEquals("Method Call expectation failed",methodRegistryExp,methodRegistryAct);
     }
 
     @Test
     public void testRegexExpressions() throws Exception {
-
-        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\test2regex.flowla"));
+        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("test2regex.flowla").getFile()));
     }
 
     @Test
     public void methodMapWIthYamlBeanAndStringArgAndIntegerArg() throws Exception{
-        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\test2regex.flowla"));
+
+        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("test2regex.flowla").getFile()));
     }
 
     @Test
     public void ifTest() throws Exception{
-        stepinProcessor.process(new File("D:\\Development\\plicku\\plicku-flowla\\src\\test\\resources\\ifTest.flowla"));
+        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("ifTest.flowla").getFile()));
+
     }
 
 

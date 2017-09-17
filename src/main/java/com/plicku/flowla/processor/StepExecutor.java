@@ -47,7 +47,7 @@ public class StepExecutor {
            else //create bean an inject
            {
                List<Object> params = new ArrayList<>();
-
+                int methodArgConsumedIndex=-1;
                for (MethodParameter methodParameter : stepMethodProperties.getMethodParameters()) {
                    Object currArgValue=null;
                    Object bean = null;
@@ -67,8 +67,9 @@ public class StepExecutor {
                    } else if (GlobalContext.class.equals(methodParameter.getParameterType())) {
                        params.add(StepinProcessor.globalContext);
                    } else {
-                       currArgValue=stepMethodProperties.getNextArgValue(currArgValue,methodParameter.getParameterType());
+                       currArgValue=stepMethodProperties.getNextArgValue(currArgValue,methodParameter.getParameterType(),methodArgConsumedIndex);
                        params.add(currArgValue);
+                       methodArgConsumedIndex++;
                    }
                }
                returnValue= method.invoke(StepinProcessor.classMap.get(this.stepMethodProperties.getDeclaringClass()), params.toArray());

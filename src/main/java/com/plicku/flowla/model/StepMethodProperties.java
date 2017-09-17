@@ -26,11 +26,10 @@ public class StepMethodProperties {
     private String keyword;
 
 
-    public Object getNextArgValue(Object currArgValue, Class parameterType) {
-        if(currArgValue==null)
-            return ConvertUtils.convert(stepAurguments.get(0).getVal(),parameterType);
-        else
-            return ConvertUtils.convert(stepAurguments.get(stepAurguments.indexOf(currArgValue)+1).getVal(),parameterType);
+    public Object getNextArgValue(Object currArgValue, Class parameterType,int currIndex) {
+
+            return ConvertUtils.convert(stepAurguments.get(currIndex+1).getVal(),parameterType);
+
     }
 
 

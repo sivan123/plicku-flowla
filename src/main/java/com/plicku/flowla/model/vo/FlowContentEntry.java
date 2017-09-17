@@ -4,9 +4,7 @@ import com.plicku.flowla.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import static com.plicku.flowla.util.Constants.ELSE_IF;
-import static com.plicku.flowla.util.Constants.END_IF;
-import static com.plicku.flowla.util.Constants.IF;
+import static com.plicku.flowla.util.Constants.*;
 
 @Data
 @AllArgsConstructor
@@ -37,12 +35,17 @@ public class FlowContentEntry {
         else
             return false;
     }
-    public boolean ifOrElseIf()
+    public boolean isIfOrElseIf()
     {
         if(IF.equals(keyword)|| ELSE_IF.equals(keyword))
             return true;
         else
             return false;
+    }
+
+    public boolean isNonValidKeyWord()
+    {
+        return !ALL_KEYWORDS.contains(this.keyword);
     }
 
 }

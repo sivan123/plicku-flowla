@@ -1,6 +1,8 @@
 package com.plicku.flowla.util;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Constants {
@@ -9,11 +11,15 @@ public class Constants {
     public static final String WHEN="When ";
     public static final String GIVEN="Given ";
     public static final String THEN="Then ";
+    public static final String BUT="But ";
     public static final String FOR_EACH="For Each ";
     public static final String IF="If ";
     public static final String ELSE_IF="Else If ";
     public static final String END_IF="End If";
-    public static final List<String> KEYWORDS = Arrays.asList(AND,WHEN,GIVEN,THEN,FOR_EACH,IF,END_IF,ELSE_IF);
+    public static final List<String> PROCESS_KEYWORDS = Arrays.asList(AND,WHEN,GIVEN,THEN,BUT);
+    public static final List<String> CONDITIONAL_KEYWORDS = Arrays.asList(IF,END_IF,ELSE_IF);
+    public static final List<String> LOOPING_KEYWORDS = Arrays.asList(FOR_EACH);
+    public static final List<String> ALL_KEYWORDS= Arrays.asList(AND,WHEN,GIVEN,THEN,BUT,IF,END_IF,ELSE_IF,FOR_EACH);
     public static final String COMMENT="#";
     public static final String SUCCESS="success";
     public static final String SKIPPED="skipped";
