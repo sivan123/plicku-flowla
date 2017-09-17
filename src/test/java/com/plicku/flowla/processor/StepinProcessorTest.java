@@ -46,6 +46,9 @@ public class StepinProcessorTest {
         stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("test2regex.flowla").getFile()));
     }
 
+    public static List<MethodCallRegistryEntry> ifTestMethodRegistryExp = new ArrayList<>();
+    public static List<MethodCallRegistryEntry> ifTestMmethodRegistryAct = new ArrayList<>();
+
     @Test
     public void ifTest() throws Exception{
         stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("ifTest.flowla").getFile()));
