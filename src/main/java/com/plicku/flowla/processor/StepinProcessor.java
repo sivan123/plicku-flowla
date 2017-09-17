@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.plicku.flowla.util.Constants.ALL_KEYWORDS;
+import static com.plicku.flowla.util.Constants.KEYWD_BEGIN_PTTN;
 import static com.plicku.flowla.util.Constants.PROCESS_KEYWORDS;
 
 public class StepinProcessor {
@@ -33,7 +34,7 @@ public class StepinProcessor {
     public static GlobalContext globalContext = new GlobalContext();
     public static Map<Class,Object> classMap = new ConcurrentHashMap<>();
     public static MethodMap methodMap = new MethodMap();
-    public static final String keywordRegex = ALL_KEYWORDS.stream().collect(Collectors.joining("|"));
+    public static final String keywordRegex = KEYWD_BEGIN_PTTN+ALL_KEYWORDS.stream().collect(Collectors.joining("|"+KEYWD_BEGIN_PTTN));
     private Pattern flowKeywordPattern = Pattern.compile(keywordRegex);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 

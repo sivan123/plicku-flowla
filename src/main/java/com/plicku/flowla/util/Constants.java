@@ -21,6 +21,7 @@ public class Constants {
     public static final List<String> LOOPING_KEYWORDS = Arrays.asList(FOR_EACH);
     public static final List<String> ALL_KEYWORDS= Arrays.asList(AND,WHEN,GIVEN,THEN,BUT,IF,END_IF,ELSE_IF,FOR_EACH);
     public static final String COMMENT="#";
+    public static final String KEYWD_BEGIN_PTTN ="((^\\s{0,100})|^|(\n\\s{0,100})|\n)";
     public static final String SUCCESS="success";
     public static final String SKIPPED="skipped";
     public static final String FAILED="failed";
