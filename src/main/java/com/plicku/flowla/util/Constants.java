@@ -14,6 +14,7 @@ public class Constants {
     public static final String ELSE_IF="Else If ";
     public static final String END_IF="End If";
     public static final List<String> KEYWORDS = Arrays.asList(AND,WHEN,GIVEN,THEN,FOR_EACH,IF,END_IF,ELSE_IF);
+    public static final String COMMENT="#";
     public static final String SUCCESS="success";
     public static final String SKIPPED="skipped";
     public static final String FAILED="failed";

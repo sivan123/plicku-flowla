@@ -7,7 +7,9 @@ import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
 import com.plicku.flowla.model.contexts.GlobalContext;
 import com.plicku.flowla.model.contexts.SequenceContext;
+import com.plicku.flowla.model.vo.FlowContentEntry;
 import com.plicku.flowla.util.Constants;
+import com.plicku.flowla.util.StepContentParserUitl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -30,7 +32,8 @@ public class StepinProcessor {
     public static GlobalContext globalContext = new GlobalContext();
     public static Map<Class,Object> classMap = new ConcurrentHashMap<>();
     public static MethodMap methodMap = new MethodMap();
-    private Pattern flowKeywordPattern = Pattern.compile("Given |When |Then |And |If |End If|Else If");
+    public static final String keywordRegex = "Given |When |Then |And |If |End If|Else If";
+    private Pattern flowKeywordPattern = Pattern.compile(keywordRegex);
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final String COMMENT="#";
     String stepdefpackage;
@@ -82,95 +85,99 @@ public class StepinProcessor {
 
     private StepinProcessor(){}
 
-    public void process(String stepinfileString) throws Exception {
+    public void process(String flowContentStr) throws Exception {
 
-        List<String> lines = Arrays.asList(StringUtils.split(stepinfileString, System.lineSeparator()));
-        process(lines);
+        List<FlowContentEntry> contentBlocks = StepContentParserUitl.getFlowConentSteps(flowContentStr,keywordRegex);
+        process(contentBlocks);
 
     }
     public void process(File storyFile) throws Exception {
 
-        List<String> lines = FileUtils.readLines(storyFile,"UTF-8");
-        process(lines);
+        String fileContentStr = FileUtils.readFileToString(storyFile,"UTF-8");
+        process(fileContentStr);
 
     }
 
-    public void process(List<String> lines) throws Exception {
+    public void process(List<FlowContentEntry> entries) throws Exception {
 
         SequenceContext sequenceContext = new SequenceContext();
         StepExecutor stepExecutor =null;
         Boolean ifElseEligibleBlockBeginRegistered= false;
         Boolean ifToProcess=false;
         List<String> ifLinesToExecute = new ArrayList<>();
-        List<String> ElseifLinesToExecute = new ArrayList<>();
-        for (String line:lines) {
-            try{
-            if (!line.startsWith(COMMENT)) {
-                if (KEYWORDS.stream().anyMatch(line.trim()::startsWith)) {
+        List<FlowContentEntry> ifOrElseifEntriesToProcess = new ArrayList<>();
+        for (int i = 0; i < entries.size(); i++) {
+            FlowContentEntry entry = entries.get(i);
+            try {
 
-                    if(ifElseEligibleBlockBeginRegistered && !(line.startsWith(END_IF)||(line.startsWith(ELSE_IF))))
+                if (entry.ifOrElseIf()) {
+                    Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext);
+                    if (if_elseif_result) {
+                        while (entries.get(i+1).isEndIfOrElseIf()){
+                            i++;
+                            ifOrElseifEntriesToProcess.add(entries.get(i));
+                        }
+                        process(ifOrElseifEntriesToProcess);
+                    } else //skip until end if or else if
                     {
+                        while (entries.get(i+1).isEndIfOrElseIf()){
+                                i++;
+                        }
+                        continue;
+                    }
+                }
+                else if (KEYWORDS.contains(entry.getKeyword())) {
+
+                    if (ifElseEligibleBlockBeginRegistered && !(entry.startsWith(END_IF) || (entry.startsWith(ELSE_IF)))) {
                         //process if blocks
                         process(ifLinesToExecute);
-                        ifElseEligibleBlockBeginRegistered=false;
-                        ifToProcess=false;
+                        ifElseEligibleBlockBeginRegistered = false;
+                        ifToProcess = false;
                         ifLinesToExecute = new ArrayList<>();
-                    }
-                    else if(ifElseEligibleBlockBeginRegistered)
-                    {
-                        ifLinesToExecute.add(line);
-                    }
-                    else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                    } else if (ifElseEligibleBlockBeginRegistered) {
+                        ifLinesToExecute.add(entry);
+                    } else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                         //complete previous step execution if pending
-                        if(IF.equals(stepExecutor.getKeyword())||ELSE_IF.equals(stepExecutor.getKeyword()))
-                        {
+                        if (IF.equals(stepExecutor.getKeyword()) || ELSE_IF.equals(stepExecutor.getKeyword())) {
                             Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext);
-                            if(if_elseif_result)
-                            {
-                                ifElseEligibleBlockBeginRegistered=true;
-                            }
-                            else {
+                            if (if_elseif_result) {
+                                ifElseEligibleBlockBeginRegistered = true;
+                            } else {
                                 continue;
                             }
 
-                        }
-                        else
-                        {
+                        } else {
                             stepExecutor.executeMethod(sequenceContext);
                         }
                     }
                     stepExecutor = new StepExecutor();
-                    Matcher matcher = flowKeywordPattern.matcher(line);
+                    Matcher matcher = flowKeywordPattern.matcher(entry);
                     matcher.find();
                     String keyword = matcher.group(0);
-                    line = line.replaceFirst(keyword, "").trim();
-                    StepMethodProperties stepMethodProperties = methodMap.get(line);
-                    if (stepMethodProperties == null) throw new Exception("Unable to find step definition for " + line);
+                    entry = entry.replaceFirst(keyword, "").trim();
+                    StepMethodProperties stepMethodProperties = methodMap.get(entry);
+                    if (stepMethodProperties == null)
+                        throw new Exception("Unable to find step definition for " + entry);
                     stepMethodProperties.setKeyword(keyword);
-                    if(IF.equals(keyword))
-                        ifToProcess=true;
+                    if (IF.equals(keyword))
+                        ifToProcess = true;
                     stepExecutor.setStepMethodProperties(stepMethodProperties);
-                }
-                else if(line.trim().startsWith(Constants.IF))
-                {
+                } else if (entry.trim().startsWith(Constants.IF)) {
                     if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                         //complete previous step execution if pending
                         stepExecutor.executeMethod(sequenceContext);
                     }
-                    stepExecutor = getStepExecutor(line);
-                    ifElseEligibleBlockBeginRegistered=true;
-                }
-                else if(ifElseEligibleBlockBeginRegistered)
-                {
-                    ifLinesToExecute.add(line);
-                }
-                else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
+                    stepExecutor = getStepExecutor(entry);
+                    ifElseEligibleBlockBeginRegistered = true;
+                } else if (ifElseEligibleBlockBeginRegistered) {
+                    ifLinesToExecute.add(entry);
+                } else if (stepExecutor != null && stepExecutor.isMethodToBeExecuted()) {
                     //add data
-                    stepExecutor.addParamDataLine(line);
+                    stepExecutor.addParamDataLine(entry);
                 }
-            }
-            }catch (Exception e){
-                System.out.println("Exception Processing "+line);
+
+            } catch (Exception e) {
+                System.out.println("Exception Processing " + entry);
                 e.printStackTrace();
             }
         }
