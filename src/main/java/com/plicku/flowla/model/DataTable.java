@@ -12,6 +12,7 @@ public class DataTable {
 
     public DataTable(List<String> datalines) {
         datalines.forEach((String line) -> {
+            line=line.trim();
            if(!"".equals(line.trim())) datatable.add(Arrays.asList(StringUtils.split(line,"\\|")));
         });
     }

@@ -18,24 +18,26 @@ public class StepExecutor {
 
     private boolean methodToBeExecuted=false;
     private StepMethodProperties stepMethodProperties;
-    private List<String> paramData = new ArrayList<>();
 
-
+    private String paramData = "";
 
     public String getKeyword()
     {
         return stepMethodProperties.getKeyword();
     }
 
+
+    public void setParamData(String paramData) {
+        this.paramData = paramData;
+    }
+
+
     public void setStepMethodProperties(StepMethodProperties stepMethodProperties) {
         this.stepMethodProperties = stepMethodProperties;
         this.methodToBeExecuted=true;
     }
 
-    public void addParamDataLine(String line)
-    {
-        this.paramData.add(line);
-    }
+
 
     public Object executeMethod(SequenceContext sequenceContext) throws Exception {
         Object returnValue= null;

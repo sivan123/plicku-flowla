@@ -3,7 +3,6 @@ package com.plicku.flowla.processor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plicku.flowla.anotations.operators.*;
 import com.plicku.flowla.anotations.types.StepDefinitions;
-import com.plicku.flowla.exceptions.FlowContentParsingException;
 import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
 import com.plicku.flowla.model.contexts.GlobalContext;
@@ -18,12 +17,16 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.plicku.flowla.util.Constants.*;
+import static com.plicku.flowla.util.Constants.ALL_KEYWORDS;
+import static com.plicku.flowla.util.Constants.PROCESS_KEYWORDS;
 
 public class StepinProcessor {
 
@@ -33,7 +36,7 @@ public class StepinProcessor {
     public static final String keywordRegex = ALL_KEYWORDS.stream().collect(Collectors.joining("|"));
     private Pattern flowKeywordPattern = Pattern.compile(keywordRegex);
     public static final ObjectMapper objectMapper = new ObjectMapper();
-    public static final String COMMENT="#";
+
     String stepdefpackage;
 
 
@@ -134,6 +137,7 @@ public class StepinProcessor {
     {
         StepExecutor stepExecutor = new StepExecutor();
         StepMethodProperties stepMethodProperties = methodMap.get(entry.getStepName());
+        stepExecutor.setParamData(entry.getData());
         if (stepMethodProperties == null) throw new Exception("Unable to find step definition for " + entry.getStepName());
         stepExecutor.setStepMethodProperties(stepMethodProperties);
         return stepExecutor;
