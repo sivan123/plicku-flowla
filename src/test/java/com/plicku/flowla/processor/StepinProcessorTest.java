@@ -1,13 +1,15 @@
 package com.plicku.flowla.processor;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StepinProcessorTest {
 
@@ -46,13 +48,43 @@ public class StepinProcessorTest {
         stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("test2regex.flowla").getFile()));
     }
 
-    public static List<MethodCallRegistryEntry> ifTestMethodRegistryExp = new ArrayList<>();
-    public static List<MethodCallRegistryEntry> ifTestMmethodRegistryAct = new ArrayList<>();
+    public static Map<String,MethodCallRegistryEntry> ifElseTestMethodRegistry = new HashMap();
+    public static List<MethodCallRegistryEntry> ifElseTestMmethodRegistryAct = new ArrayList<>();
 
+    private void ifElseTestMethodRegistrySetUp(MethodCallRegistryEntry methodCallRegistryEntry)
+    {
+        ifElseTestMethodRegistry.put(methodCallRegistryEntry.getName(),methodCallRegistryEntry);
+    }
     @Test
-    public void ifTest() throws Exception{
-        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("ifTest.flowla").getFile()));
+    public void ifElseTest() throws Exception{
 
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 15 plus 15 equals 30",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 30",true,false));
+
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 25 plus 25 equals 51",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 51",false,false));
+
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 5 plus 5 equals 10",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 4 plus 4 equals 8",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 1 and Json param",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Test with simple bean json matchedMethod param",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 3 plus 3 equals 6",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 6",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 7 plus 7 equals 13",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 13",false,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 7 plus 7 equals 15",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 15",false,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 2 plus 2 equals 4",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 3 plus 3 equals 7",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 7",false,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 5 plus 5 equals 10",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 10",true,false));
+        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("ifTest.flowla").getFile()));
+        SoftAssertions assertions = new SoftAssertions();
+        ifElseTestMethodRegistry.forEach((s, methodCallRegistryEntry) -> {
+            assertions.assertThat(methodCallRegistryEntry.actuallycalled).as(methodCallRegistryEntry.name).isEqualTo(methodCallRegistryEntry.expectedToBeCalled);
+        });
+        assertions.assertAll();
     }
 
 

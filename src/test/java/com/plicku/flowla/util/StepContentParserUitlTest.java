@@ -37,11 +37,6 @@ public class StepContentParserUitlTest {
         assertions.assertThat(entryList2.get(0)).isEqualTo(new FlowContentEntry("If ","Testing 5 plus 5 equals 10",""));
         assertions.assertThat(entryList2.get(1)).isEqualTo(new FlowContentEntry("Then ","I have 10 eggs in my basket",""));
 
-
-
-
-
-
         assertions.assertAll();
     }
 

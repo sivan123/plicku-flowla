@@ -13,6 +13,8 @@ public class TestStepDefinition2 {
    @Given("I have (\\d+) (.*) in my basket")
     public void givenIhaveInMyBasket(int number, String item)
    {
+
+
        System.out.println(number + item);
    }
 
@@ -31,16 +33,5 @@ public class TestStepDefinition2 {
         System.out.println(param2);
     }
 
-    @If("Testing (\\d+) plus (\\d+) equals (\\d+)")
-    public boolean additionCheck(int x,int y,int z)
-    {
-        if((x+y)==z) {
-            System.out.println("calculated to true");
-            return true;
-        }
-        else {
-            System.out.println("calculated to false");
-            return false;
-        }
-    }
+
 }
