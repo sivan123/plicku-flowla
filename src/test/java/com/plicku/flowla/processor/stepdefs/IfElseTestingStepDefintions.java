@@ -39,7 +39,7 @@ public class IfElseTestingStepDefintions {
     {
         SimpleTestBean simpleTestBean1 = new SimpleTestBean("TestName","TestAddress1",30878);
         Assert.assertEquals(simpleTestBean1,simpleTestBean);
-        StepinProcessorTest.ifElseTestMethodRegistry.get("Simple Test for If with value "+x).setActuallycalled(true);
+        StepinProcessorTest.ifElseTestMethodRegistry.get("Simple Test for If with value "+x+" and Json param").setActuallycalled(true);
     }
 
 

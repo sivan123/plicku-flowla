@@ -24,8 +24,10 @@ public class StepContentParserUitl
         List<FlowContentEntry> entries = new ArrayList<>();
         String[] entryStr = flowContent.split(String.format(WITH_DELIMITER, delimter));
 
+        int depth=1;
         for (int i = 0; i < entryStr.length; i++) {
             try{
+
             if("".equals(entryStr[i].trim())) continue;
             String keyword=END_IF.equals(entryStr[i].trim())?entryStr[i].trim():entryStr[i].trim()+" ";
             String stepname="";
@@ -50,7 +52,17 @@ public class StepContentParserUitl
                     }
                 }
             }
-            FlowContentEntry entry = new FlowContentEntry(keyword,stepname,stringBuilder.toString());
+
+            if(IF.equals(keyword)){
+                depth++;
+            }
+            else if(END_IF.equals(keyword))
+            {
+                depth--;
+            }
+
+
+            FlowContentEntry entry = new FlowContentEntry(keyword,stepname,stringBuilder.toString(),depth);
             i++;
             entries.add(entry);
             }catch (Exception e){

@@ -105,16 +105,26 @@ public class StepinProcessor {
             FlowContentEntry entry = entries.get(i);
             try {
                 if (entry.isIfOrElseIf()) {
+
+                    if(ifOrElseifEntriesToProcess.size()>0)
+                    {
+                        process(ifOrElseifEntriesToProcess);
+                        ifOrElseifEntriesToProcess.clear();
+                    }
                     StepExecutor stepExecutor = getStepExecutor(entry);
                     Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext);
                     if (if_elseif_result) {
-                        while (!entries.get(i+1).isEndIfOrElseIf()){
+                       while (!((entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()) ||
+                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf())))
+                       {
                             i++;
                             ifOrElseifEntriesToProcess.add(entries.get(i));
                         }
                     } else //skip until end if or else if
                     {
-                        while (!entries.get(i+1).isEndIfOrElseIf()){
+                        while(!((entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()) ||
+                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf())))
+                        {
                                 i++;
                         }
                     }
@@ -122,8 +132,16 @@ public class StepinProcessor {
                 else if(entry.isEndIf() && ifOrElseifEntriesToProcess.size()>0)
                 {
                     process(ifOrElseifEntriesToProcess);
+                    ifOrElseifEntriesToProcess.clear();
                 }
                 else if (PROCESS_KEYWORDS.contains(entry.getKeyword())) {
+
+                    if(ifOrElseifEntriesToProcess.size()>0)
+                    {
+                        process(ifOrElseifEntriesToProcess);
+                        ifOrElseifEntriesToProcess.clear();
+                    }
+
                     StepExecutor stepExecutor = getStepExecutor(entry);
                     stepExecutor.executeMethod(sequenceContext);
                 }

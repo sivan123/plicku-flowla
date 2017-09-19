@@ -65,9 +65,9 @@ public class StepinProcessorTest {
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 51",false,false));
 
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 5 plus 5 equals 10",true,false));
-        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 4 plus 4 equals 8",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 1 and Json param",true,false));
-        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Test with simple bean json matchedMethod param",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 4 plus 4 equals 8",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 2 and Json param",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 3 plus 3 equals 6",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 6",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 7 plus 7 equals 13",true,false));
@@ -75,10 +75,11 @@ public class StepinProcessorTest {
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 7 plus 7 equals 15",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 15",false,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 2 plus 2 equals 4",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 4",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 3 plus 3 equals 7",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 7",false,false));
-        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 5 plus 5 equals 10",true,false));
-        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 10",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 9 plus 9 equals 18",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 18",true,false));
         stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("ifTest.flowla").getFile()));
         SoftAssertions assertions = new SoftAssertions();
         ifElseTestMethodRegistry.forEach((s, methodCallRegistryEntry) -> {

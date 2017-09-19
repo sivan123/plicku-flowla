@@ -13,6 +13,7 @@ public class FlowContentEntry {
     String keyword;
     String stepName;
     String data;
+    int depth;
 
     public boolean isEndIfOrElseIf()
     {
@@ -48,4 +49,16 @@ public class FlowContentEntry {
         return !ALL_KEYWORDS.contains(this.keyword);
     }
 
+    public boolean isElseIf() {
+        if(ELSE_IF.equals(keyword))
+            return true;
+        else
+            return false;
+    }
+
+    public FlowContentEntry(String keyword, String stepName, String data) {
+        this.keyword = keyword;
+        this.stepName = stepName;
+        this.data = data;
+    }
 }

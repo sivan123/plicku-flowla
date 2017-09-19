@@ -12,22 +12,23 @@ If Testing 5 plus 5 equals 10
     {"name":"TestName",
     "address1":"TestAddress1","zip":30878}
     If Testing 4 plus 4 equals 8
-        Given Simple Test for If with value 1 and Json param
+        Given Simple Test for If with value 2 and Json param
             {"name":"TestName",
             "address1":"TestAddress1","zip":30878}
         If Testing 3 plus 3 equals 6
-           Then Simple Test for If with value 6
+            Then Simple Test for If with value 6
             If Testing 7 plus 7 equals 13
                Then Simple Test for If with value 13
             Else If Testing 7 plus 7 equals 15
                Then Simple Test for If with value 15
-            Else if Testing 2 plus 2 equals 4
+            Else If Testing 2 plus 2 equals 4
                Then Simple Test for If with value 4
-        End if
+            End If
+        End If
         If Testing 3 plus 3 equals 7
             Then Simple Test for If with value 7
-        End if
-    Else if Testing 5 plus 5 equals 10
-        Then Simple Test for If with value 10
+        End If
+    Else If Testing 9 plus 9 equals 18
+        Then Simple Test for If with value 18
     End If
 End If
