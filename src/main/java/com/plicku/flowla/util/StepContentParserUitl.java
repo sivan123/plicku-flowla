@@ -10,9 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.plicku.flowla.util.Constants.COMMENT;
-import static com.plicku.flowla.util.Constants.END_IF;
-import static com.plicku.flowla.util.Constants.IF;
+import static com.plicku.flowla.util.Constants.*;
 
 public class StepContentParserUitl
 {
@@ -29,7 +27,7 @@ public class StepContentParserUitl
             try{
 
             if("".equals(entryStr[i].trim())) continue;
-            String keyword=END_IF.equals(entryStr[i].trim())?entryStr[i].trim():entryStr[i].trim()+" ";
+            String keyword=(END_IF.equals(entryStr[i].trim())|| OTHERWISE.equals(entryStr[i].trim())) ?entryStr[i].trim():entryStr[i].trim()+" ";
             String stepname="";
             StringBuilder stringBuilder = new StringBuilder();
             if(!END_IF.equals(keyword)){

@@ -1,6 +1,5 @@
 package com.plicku.flowla.model.vo;
 
-import com.plicku.flowla.util.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -44,6 +43,14 @@ public class FlowContentEntry {
             return false;
     }
 
+    public boolean isIfOrElseIfOrElse()
+    {
+        if(IF.equals(keyword)|| ELSE_IF.equals(keyword)|| OTHERWISE.equals(keyword))
+            return true;
+        else
+            return false;
+    }
+
     public boolean isNonValidKeyWord()
     {
         return !ALL_KEYWORDS.contains(this.keyword);
@@ -60,5 +67,12 @@ public class FlowContentEntry {
         this.keyword = keyword;
         this.stepName = stepName;
         this.data = data;
+    }
+
+    public boolean isOtherWise() {
+        if(OTHERWISE.equals(keyword))
+            return true;
+        else
+            return false;
     }
 }

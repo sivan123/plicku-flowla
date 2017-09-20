@@ -100,46 +100,58 @@ public class StepinProcessor {
 
     public void process(List<FlowContentEntry> entries) throws Exception {
         SequenceContext sequenceContext = new SequenceContext();
-        List<FlowContentEntry> ifOrElseifEntriesToProcess = new ArrayList<>();
+        List<FlowContentEntry> ifOrElseifOrElseEntriesToProcess = new ArrayList<>();
         for (int i = 0; i < entries.size(); i++) {
             FlowContentEntry entry = entries.get(i);
             try {
                 if (entry.isIfOrElseIf()) {
 
-                    if(ifOrElseifEntriesToProcess.size()>0)
+                    if(ifOrElseifOrElseEntriesToProcess.size()>0)
                     {
-                        process(ifOrElseifEntriesToProcess);
-                        ifOrElseifEntriesToProcess.clear();
+                        process(ifOrElseifOrElseEntriesToProcess);
+                        ifOrElseifOrElseEntriesToProcess.clear();
                     }
                     StepExecutor stepExecutor = getStepExecutor(entry);
                     Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext);
                     if (if_elseif_result) {
                        while (!((entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()) ||
-                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf())))
+                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf()) ||
+                               (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isOtherWise())
+                              ))
                        {
                             i++;
-                            ifOrElseifEntriesToProcess.add(entries.get(i));
+                            ifOrElseifOrElseEntriesToProcess.add(entries.get(i));
                         }
                     } else //skip until end if or else if
                     {
                         while(!((entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()) ||
-                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf())))
+                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf()) ||
+                                (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isOtherWise())
+                                ))
                         {
                                 i++;
                         }
                     }
                 }
-                else if(entry.isEndIf() && ifOrElseifEntriesToProcess.size()>0)
+                else if(entry.isOtherWise())
                 {
-                    process(ifOrElseifEntriesToProcess);
-                    ifOrElseifEntriesToProcess.clear();
+                    while (!(entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()))
+                    {
+                        i++;
+                        ifOrElseifOrElseEntriesToProcess.add(entries.get(i));
+                    }
+                }
+                else if(entry.isEndIf() && ifOrElseifOrElseEntriesToProcess.size()>0)
+                {
+                    process(ifOrElseifOrElseEntriesToProcess);
+                    ifOrElseifOrElseEntriesToProcess.clear();
                 }
                 else if (PROCESS_KEYWORDS.contains(entry.getKeyword())) {
 
-                    if(ifOrElseifEntriesToProcess.size()>0)
+                    if(ifOrElseifOrElseEntriesToProcess.size()>0)
                     {
-                        process(ifOrElseifEntriesToProcess);
-                        ifOrElseifEntriesToProcess.clear();
+                        process(ifOrElseifOrElseEntriesToProcess);
+                        ifOrElseifOrElseEntriesToProcess.clear();
                     }
 
                     StepExecutor stepExecutor = getStepExecutor(entry);

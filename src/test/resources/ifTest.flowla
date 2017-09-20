@@ -21,8 +21,11 @@ If Testing 5 plus 5 equals 10
                Then Simple Test for If with value 13
             Else If Testing 7 plus 7 equals 15
                Then Simple Test for If with value 15
-            Else If Testing 2 plus 2 equals 4
-               Then Simple Test for If with value 4
+            Else If Testing 2 plus 2 equals 3
+               Then Simple Test for If with value 3
+            Otherwise
+               Then Simple Test for If with value 16
+               Then Simple Test for If with value 17
             End If
         End If
         If Testing 3 plus 3 equals 7

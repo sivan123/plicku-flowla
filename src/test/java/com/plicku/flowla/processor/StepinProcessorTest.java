@@ -74,8 +74,10 @@ public class StepinProcessorTest {
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 13",false,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 7 plus 7 equals 15",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 15",false,false));
-        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 2 plus 2 equals 4",true,false));
-        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 4",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 2 plus 2 equals 3",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 3",false,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 16",true,false));
+        ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 17",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 3 plus 3 equals 7",true,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Simple Test for If with value 7",false,false));
         ifElseTestMethodRegistrySetUp(new MethodCallRegistryEntry("Testing 9 plus 9 equals 18",true,false));
