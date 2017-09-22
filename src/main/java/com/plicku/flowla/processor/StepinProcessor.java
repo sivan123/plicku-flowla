@@ -17,10 +17,7 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -79,6 +76,10 @@ public class StepinProcessor {
         methods = reflections.getMethodsAnnotatedWith(If.class);
         methods.forEach(method -> {
             methodMap.put(method.getDeclaredAnnotation(If.class).value(),method);
+        });
+        methods = reflections.getMethodsAnnotatedWith(ForEach.class);
+        methods.forEach(method -> {
+            methodMap.put(method.getDeclaredAnnotation(ForEach.class).value(),method);
         });
 
     }
@@ -146,6 +147,20 @@ public class StepinProcessor {
                     process(ifOrElseifOrElseEntriesToProcess);
                     ifOrElseifOrElseEntriesToProcess.clear();
                 }
+                else if(entry.isForEach()){
+                    StepExecutor stepExecutor = getStepExecutor(entry);
+                    List<FlowContentEntry> forEachEntriestoProcess = new ArrayList<>();
+                    Collection collection = (Collection) stepExecutor.executeMethod(sequenceContext);
+                    while (!(entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndFor()))
+                    {
+                        i++;
+                        forEachEntriestoProcess.add(entries.get(i));
+                    }
+                    for (int j = 0; j < collection.size() ; j++) {
+                        process(forEachEntriestoProcess);
+                    }
+                }
+                else if(entry.isEndFor()){}
                 else if (PROCESS_KEYWORDS.contains(entry.getKeyword())) {
 
                     if(ifOrElseifOrElseEntriesToProcess.size()>0)

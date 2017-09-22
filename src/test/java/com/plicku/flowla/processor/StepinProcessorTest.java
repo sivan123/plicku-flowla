@@ -90,5 +90,11 @@ public class StepinProcessorTest {
         assertions.assertAll();
     }
 
+    @Test
+    public void foreachTest() throws Exception
+    {
+        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("foreachtest.flowla").getFile()));
+    }
+
 
 }

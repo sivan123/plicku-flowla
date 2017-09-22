@@ -11,6 +11,7 @@ public class Constants {
     public static final String THEN="Then ";
     public static final String BUT="But ";
     public static final String FOR_EACH="For Each ";
+    public static final String END_FOR = "EndFor";
     public static final String IF="If ";
     public static final String ELSE_IF="Else If ";
     public static final String END_IF="End If";
@@ -18,7 +19,7 @@ public class Constants {
     public static final List<String> PROCESS_KEYWORDS = Arrays.asList(AND,WHEN,GIVEN,THEN,BUT);
     public static final List<String> CONDITIONAL_KEYWORDS = Arrays.asList(IF,END_IF,ELSE_IF);
     public static final List<String> LOOPING_KEYWORDS = Arrays.asList(FOR_EACH);
-    public static final List<String> ALL_KEYWORDS= Arrays.asList(AND,WHEN,GIVEN,THEN,BUT,IF,END_IF, OTHERWISE,ELSE_IF,FOR_EACH);
+    public static final List<String> ALL_KEYWORDS= Arrays.asList(AND,WHEN,GIVEN,THEN,BUT,IF,END_IF, OTHERWISE,ELSE_IF,FOR_EACH,END_FOR);
     public static final String COMMENT="#";
     public static final String KEYWD_BEGIN_PTTN ="((^\\s{0,100})|^|(\n\\s{0,100})|\n)";
     public static final String SUCCESS="success";

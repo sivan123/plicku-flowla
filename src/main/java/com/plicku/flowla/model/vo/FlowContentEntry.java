@@ -75,4 +75,17 @@ public class FlowContentEntry {
         else
             return false;
     }
+
+    public boolean isForEach(){
+        if(FOR_EACH.equals(keyword))
+            return true;
+        else
+            return false;
+    }
+    public boolean isEndFor(){
+        if(END_FOR.equals(keyword))
+            return true;
+        else
+            return false;
+    }
 }

@@ -1,0 +1,9 @@
+
+For Each items in basket
+    Then simple print
+EndFor
+
+
+For Each items in basket
+    Then simple print $item
+EndFor

@@ -16,6 +16,8 @@ public class StepContentParserUitl
 {
 
     static public final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+
+
     public static List<FlowContentEntry> getFlowConentSteps(String flowContent, String delimter) throws FlowContentParsingException {
 
         flowContent=Arrays.asList(flowContent.split(System.lineSeparator())).stream().filter(s -> !s.startsWith(COMMENT)).collect(Collectors.joining(System.lineSeparator()));
@@ -27,10 +29,10 @@ public class StepContentParserUitl
             try{
 
             if("".equals(entryStr[i].trim())) continue;
-            String keyword=(END_IF.equals(entryStr[i].trim())|| OTHERWISE.equals(entryStr[i].trim())) ?entryStr[i].trim():entryStr[i].trim()+" ";
+            String keyword=(END_IF.equals(entryStr[i].trim())|| OTHERWISE.equals(entryStr[i].trim()) || END_FOR.equals(entryStr[i].trim())) ?entryStr[i].trim():entryStr[i].trim()+" ";
             String stepname="";
             StringBuilder stringBuilder = new StringBuilder();
-            if(!END_IF.equals(keyword)){
+            if(!(END_IF.equals(keyword)||END_FOR.equals(keyword))){
 
                 String[] stepNamedata = StringUtils.split(entryStr[i+1], System.lineSeparator());
                 boolean stepNameSet=false;
@@ -51,10 +53,10 @@ public class StepContentParserUitl
                 }
             }
 
-            if(IF.equals(keyword)){
+            if(IF.equals(keyword) || FOR_EACH.equals(keyword)){
                 depth++;
             }
-            else if(END_IF.equals(keyword))
+            else if(END_IF.equals(keyword) || END_FOR.equals(keyword))
             {
                 depth--;
             }
@@ -64,7 +66,7 @@ public class StepContentParserUitl
             i++;
             entries.add(entry);
             }catch (Exception e){
-                throw new FlowContentParsingException("Error parsing block "+entryStr);
+                throw new FlowContentParsingException("Error parsing block "+Arrays.asList(entryStr));
             }
         }
         return entries;
