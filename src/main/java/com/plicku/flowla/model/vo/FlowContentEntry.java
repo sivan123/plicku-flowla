@@ -12,6 +12,7 @@ public class FlowContentEntry {
     String keyword;
     String stepName;
     String data;
+    String declaredVariable;
     int depth;
 
     public boolean isEndIfOrElseIf()

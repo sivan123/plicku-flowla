@@ -1,9 +1,9 @@
 
-For Each items in basket
+For Each items of basket
     Then simple print
 EndFor
 
 
-For Each items in basket
-    Then simple print $item
+For Each ${item} in items of basket
+    Then simple print ${item}
 EndFor

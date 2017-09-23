@@ -1,4 +1,4 @@
-package com.plicku.flowla.util;
+package com.plicku.flowla.model.contexts;
 
 public class Argument {
     private static final long serialVersionUID = 1L;

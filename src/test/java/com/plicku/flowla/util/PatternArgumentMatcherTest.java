@@ -1,13 +1,12 @@
 package com.plicku.flowla.util;
 
+import com.plicku.flowla.model.contexts.Argument;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
 
 public class PatternArgumentMatcherTest {
     @Test

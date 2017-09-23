@@ -7,6 +7,7 @@ import com.plicku.flowla.model.MethodParameter;
 import com.plicku.flowla.model.StepMethodProperties;
 import com.plicku.flowla.model.contexts.GlobalContext;
 import com.plicku.flowla.model.contexts.SequenceContext;
+import com.plicku.flowla.model.contexts.VariableMap;
 import com.plicku.flowla.util.ParamDataUtil;
 
 import java.lang.reflect.Method;
@@ -39,7 +40,7 @@ public class StepExecutor {
 
 
 
-    public Object executeMethod(SequenceContext sequenceContext) throws Exception {
+    public Object executeMethod(SequenceContext sequenceContext, VariableMap variableMap) throws Exception {
         Object returnValue= null;
        try {
            Method method = stepMethodProperties.getMatchedMethod();
@@ -69,7 +70,7 @@ public class StepExecutor {
                    } else if (GlobalContext.class.equals(methodParameter.getParameterType())) {
                        params.add(StepinProcessor.globalContext);
                    } else {
-                       currArgValue=stepMethodProperties.getNextArgValue(currArgValue,methodParameter.getParameterType(),methodArgConsumedIndex);
+                       currArgValue=stepMethodProperties.getNextArgValue(currArgValue,methodParameter.getParameterType(),methodArgConsumedIndex,variableMap);
                        params.add(currArgValue);
                        methodArgConsumedIndex++;
                    }

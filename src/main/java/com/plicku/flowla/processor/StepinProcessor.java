@@ -7,8 +7,10 @@ import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
 import com.plicku.flowla.model.contexts.GlobalContext;
 import com.plicku.flowla.model.contexts.SequenceContext;
+import com.plicku.flowla.model.contexts.VariableMap;
 import com.plicku.flowla.model.vo.FlowContentEntry;
 import com.plicku.flowla.util.StepContentParserUitl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -89,7 +91,8 @@ public class StepinProcessor {
     public void process(String flowContentStr) throws Exception {
 
         List<FlowContentEntry> contentBlocks = StepContentParserUitl.getFlowConentSteps(flowContentStr,keywordRegex);
-        process(contentBlocks);
+        VariableMap variableMap = new VariableMap();
+        process(contentBlocks,variableMap);
 
     }
     public void process(File storyFile) throws Exception {
@@ -99,7 +102,7 @@ public class StepinProcessor {
 
     }
 
-    public void process(List<FlowContentEntry> entries) throws Exception {
+    public void process(List<FlowContentEntry> entries, VariableMap variableMap) throws Exception {
         SequenceContext sequenceContext = new SequenceContext();
         List<FlowContentEntry> ifOrElseifOrElseEntriesToProcess = new ArrayList<>();
         for (int i = 0; i < entries.size(); i++) {
@@ -109,11 +112,11 @@ public class StepinProcessor {
 
                     if(ifOrElseifOrElseEntriesToProcess.size()>0)
                     {
-                        process(ifOrElseifOrElseEntriesToProcess);
+                        process(ifOrElseifOrElseEntriesToProcess,variableMap);
                         ifOrElseifOrElseEntriesToProcess.clear();
                     }
                     StepExecutor stepExecutor = getStepExecutor(entry);
-                    Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext);
+                    Boolean if_elseif_result = (Boolean) stepExecutor.executeMethod(sequenceContext,variableMap);
                     if (if_elseif_result) {
                        while (!((entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()) ||
                                 (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf()) ||
@@ -144,20 +147,21 @@ public class StepinProcessor {
                 }
                 else if(entry.isEndIf() && ifOrElseifOrElseEntriesToProcess.size()>0)
                 {
-                    process(ifOrElseifOrElseEntriesToProcess);
+                    process(ifOrElseifOrElseEntriesToProcess,variableMap);
                     ifOrElseifOrElseEntriesToProcess.clear();
                 }
                 else if(entry.isForEach()){
                     StepExecutor stepExecutor = getStepExecutor(entry);
                     List<FlowContentEntry> forEachEntriestoProcess = new ArrayList<>();
-                    Collection collection = (Collection) stepExecutor.executeMethod(sequenceContext);
+                    Collection collection = (Collection) stepExecutor.executeMethod(sequenceContext,variableMap);
                     while (!(entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndFor()))
                     {
                         i++;
                         forEachEntriestoProcess.add(entries.get(i));
                     }
                     for (int j = 0; j < collection.size() ; j++) {
-                        process(forEachEntriestoProcess);
+                        variableMap.setVariable(entry.getDeclaredVariable(),CollectionUtils.get(collection,j));
+                        process(forEachEntriestoProcess,variableMap);
                     }
                 }
                 else if(entry.isEndFor()){}
@@ -165,12 +169,12 @@ public class StepinProcessor {
 
                     if(ifOrElseifOrElseEntriesToProcess.size()>0)
                     {
-                        process(ifOrElseifOrElseEntriesToProcess);
+                        process(ifOrElseifOrElseEntriesToProcess,variableMap);
                         ifOrElseifOrElseEntriesToProcess.clear();
                     }
 
                     StepExecutor stepExecutor = getStepExecutor(entry);
-                    stepExecutor.executeMethod(sequenceContext);
+                    stepExecutor.executeMethod(sequenceContext,variableMap);
                 }
             } catch (Exception e) {
                 System.out.println("Exception Processing " + entry);

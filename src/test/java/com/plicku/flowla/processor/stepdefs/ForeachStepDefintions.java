@@ -11,7 +11,7 @@ import java.util.List;
 public class ForeachStepDefintions
 {
 
-    @ForEach("items in basket")
+    @ForEach("items of basket")
     public List<String> getItemsinBasket()
     {
         return Arrays.asList("Pen","Pencil","Flower","Bottle","Apple");
@@ -29,9 +29,4 @@ public class ForeachStepDefintions
         System.out.println("hello");
     }
 
-    @Then("simple print $item")
-    public void printsimple(String item)
-    {
-        System.out.println("hello "+item);
-    }
 }

@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.plicku.flowla.util.Constants.*;
@@ -15,15 +17,20 @@ import static com.plicku.flowla.util.Constants.*;
 public class StepContentParserUitl
 {
 
-    static public final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+    public static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+    private static final String VARIABLE_DECLARATION_AS= ".*\\sas\\s\\$\\{(.*)\\s*$}";
+    private static final String VARIABLE_DECLARATION_IN= "^\\$\\{(.*)\\}\\s+in\\s+.*";
 
+    final static Pattern variableAsDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_AS);
+    final static Pattern variableInDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_IN);
 
     public static List<FlowContentEntry> getFlowConentSteps(String flowContent, String delimter) throws FlowContentParsingException {
+
 
         flowContent=Arrays.asList(flowContent.split(System.lineSeparator())).stream().filter(s -> !s.startsWith(COMMENT)).collect(Collectors.joining(System.lineSeparator()));
         List<FlowContentEntry> entries = new ArrayList<>();
         String[] entryStr = flowContent.split(String.format(WITH_DELIMITER, delimter));
-
+        String declaredVariable=null;
         int depth=1;
         for (int i = 0; i < entryStr.length; i++) {
             try{
@@ -53,8 +60,15 @@ public class StepContentParserUitl
                 }
             }
 
-            if(IF.equals(keyword) || FOR_EACH.equals(keyword)){
+            if(IF.equals(keyword)){
                 depth++;
+            }
+            else if (FOR_EACH.equals(keyword))
+            {
+                depth++;
+                declaredVariable=getInDeclaredVariable(stepname);
+                if(declaredVariable!=null)
+                    stepname=stepname.replace(VARIABLE_DECLARATION_IN,"");
             }
             else if(END_IF.equals(keyword) || END_FOR.equals(keyword))
             {
@@ -62,7 +76,7 @@ public class StepContentParserUitl
             }
 
 
-            FlowContentEntry entry = new FlowContentEntry(keyword,stepname,stringBuilder.toString(),depth);
+            FlowContentEntry entry = new FlowContentEntry(keyword,stepname,stringBuilder.toString(),declaredVariable,depth);
             i++;
             entries.add(entry);
             }catch (Exception e){
@@ -84,6 +98,18 @@ public class StepContentParserUitl
         if(ifCOunts!=endifCOunts) throw new ValidationException("Error Parsing the Flow Content. Check \"If\" statements are closed by a matching \"End if\".");
 
 
+    }
+
+    public static String getInDeclaredVariable(String stepName)
+    {
+        Matcher matcher=variableInDeclarePattern.matcher(stepName);
+        if (matcher.lookingAt()) {
+            System.out.println(matcher.groupCount());
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                return matcher.group(i);
+            }
+        }
+        return null;
     }
 
 

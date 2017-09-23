@@ -1,8 +1,10 @@
 package com.plicku.flowla.model;
 
+import com.plicku.flowla.exceptions.ProcessingException;
 import com.plicku.flowla.model.contexts.GlobalContext;
 import com.plicku.flowla.model.contexts.SequenceContext;
-import com.plicku.flowla.util.Argument;
+import com.plicku.flowla.model.contexts.Argument;
+import com.plicku.flowla.model.contexts.VariableMap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -12,10 +14,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Setter @Getter
 public class StepMethodProperties {
-
-
+    Pattern variablePattern = Pattern.compile("\\$\\{(.*)\\}");
     private Method matchedMethod;
     private Class declaringClass;
     private List<Argument> stepAurguments;
@@ -26,12 +30,26 @@ public class StepMethodProperties {
     private String keyword;
 
 
-    public Object getNextArgValue(Object currArgValue, Class parameterType,int currIndex) {
-
-            return ConvertUtils.convert(stepAurguments.get(currIndex+1).getVal(),parameterType);
-
+    public Object getNextArgValue(Object currArgValue, Class parameterType, int currIndex, VariableMap variableMap) throws ProcessingException {
+            String val= (String) stepAurguments.get(currIndex+1).getVal();
+            if(val.startsWith("${") && val.endsWith("}"))
+            {
+                return ConvertUtils.convert(variableMap.getVariableVal(getDeclaredVariableName(val)),parameterType);
+            }
+            else
+                return ConvertUtils.convert(stepAurguments.get(currIndex+1).getVal(),parameterType);
     }
 
+    private String getDeclaredVariableName(String val)
+    {
+        Matcher matcher=variablePattern.matcher(val);
+        if (matcher.lookingAt()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                return matcher.group(i).trim();
+            }
+        }
+        return null;
+    }
 
     public StepMethodProperties(Method matchedMethod,String stepName) {
         this.matchedMethod = matchedMethod;
