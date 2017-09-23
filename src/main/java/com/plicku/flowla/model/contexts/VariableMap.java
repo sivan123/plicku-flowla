@@ -9,11 +9,11 @@ public class VariableMap {
     private Map<String,Object> variableMap= new ConcurrentHashMap<>();
 
     public Object getVariableVal(String variable) throws ProcessingException {
-        if(!variableMap.containsKey(variable)){
+        if(!this.variableMap.containsKey(variable)){
             throw new ProcessingException(variable+" not found. Make sure the variable is set in the flow");
         }
         else
-            return variableMap.get(variable);
+            return this.variableMap.get(variable);
     }
     public void removeVariable(String variable)
     {
@@ -24,7 +24,7 @@ public class VariableMap {
     }
     public void setVariable(String variable,Object val)
     {
-        variableMap.put(variable,val);
+        this.variableMap.put(variable,val);
     }
 
 }

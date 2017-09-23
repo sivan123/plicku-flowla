@@ -5,5 +5,5 @@ EndFor
 
 
 For Each ${item} in items of basket
-    Then simple print ${item}
+    Then basket has ${item}
 EndFor

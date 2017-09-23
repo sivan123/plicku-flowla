@@ -7,6 +7,7 @@ import com.plicku.flowla.model.contexts.Argument;
 import com.plicku.flowla.model.contexts.VariableMap;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 
 import java.lang.annotation.Annotation;
@@ -34,7 +35,14 @@ public class StepMethodProperties {
             String val= (String) stepAurguments.get(currIndex+1).getVal();
             if(val.startsWith("${") && val.endsWith("}"))
             {
-                return ConvertUtils.convert(variableMap.getVariableVal(getDeclaredVariableName(val)),parameterType);
+                val=getDeclaredVariableName(val);
+                if(val.contains("."))
+                {
+
+                    return ConvertUtils.convert(variableMap.getVariableVal(getDeclaredVariableName(val)), parameterType);
+                }
+                else
+                    return ConvertUtils.convert(variableMap.getVariableVal(getDeclaredVariableName(val)),parameterType);
             }
             else
                 return ConvertUtils.convert(stepAurguments.get(currIndex+1).getVal(),parameterType);

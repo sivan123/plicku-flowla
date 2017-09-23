@@ -160,7 +160,8 @@ public class StepinProcessor {
                         forEachEntriestoProcess.add(entries.get(i));
                     }
                     for (int j = 0; j < collection.size() ; j++) {
-                        variableMap.setVariable(entry.getDeclaredVariable(),CollectionUtils.get(collection,j));
+                        if(entry.getDeclaredVariable()!=null)
+                            variableMap.setVariable(entry.getDeclaredVariable(),CollectionUtils.get(collection,j));
                         process(forEachEntriestoProcess,variableMap);
                     }
                 }

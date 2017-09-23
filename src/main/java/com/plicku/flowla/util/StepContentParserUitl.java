@@ -19,10 +19,10 @@ public class StepContentParserUitl
 
     public static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
     private static final String VARIABLE_DECLARATION_AS= ".*\\sas\\s\\$\\{(.*)\\s*$}";
-    private static final String VARIABLE_DECLARATION_IN= "^\\$\\{(.*)\\}\\s+in\\s+.*";
+    private static final String VARIABLE_DECLARATION_IN= "^\\$\\{(.*)}\\s+in\\s+";
 
     final static Pattern variableAsDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_AS);
-    final static Pattern variableInDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_IN);
+    final static Pattern variableInDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_IN+".*");
 
     public static List<FlowContentEntry> getFlowConentSteps(String flowContent, String delimter) throws FlowContentParsingException {
 
@@ -68,7 +68,7 @@ public class StepContentParserUitl
                 depth++;
                 declaredVariable=getInDeclaredVariable(stepname);
                 if(declaredVariable!=null)
-                    stepname=stepname.replace(VARIABLE_DECLARATION_IN,"");
+                    stepname=stepname.replaceAll(VARIABLE_DECLARATION_IN,"");
             }
             else if(END_IF.equals(keyword) || END_FOR.equals(keyword))
             {
