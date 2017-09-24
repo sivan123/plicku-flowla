@@ -70,6 +70,13 @@ public class FlowContentEntry {
         this.data = data;
     }
 
+    public FlowContentEntry(String keyword, String stepName, String data, int depth) {
+        this.keyword = keyword;
+        this.stepName = stepName;
+        this.data = data;
+        this.depth = depth;
+    }
+
     public boolean isOtherWise() {
         if(OTHERWISE.equals(keyword))
             return true;

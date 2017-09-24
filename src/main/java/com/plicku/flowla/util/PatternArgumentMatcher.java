@@ -1,7 +1,5 @@
 package com.plicku.flowla.util;
 
-import com.plicku.flowla.model.contexts.Argument;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,13 +12,12 @@ public class PatternArgumentMatcher {
         this.pattern = pattern;
     }
 
-    public List<Argument> argumentsFrom(String stepname) {
+    public List<String> argumentsFrom(String stepname) {
         Matcher matcher = pattern.matcher(stepname);
         if (matcher.lookingAt()) {
-            List<Argument> arguments = new ArrayList<>(matcher.groupCount());
+            List<String> arguments = new ArrayList<>(matcher.groupCount());
             for (int i = 1; i <= matcher.groupCount(); i++) {
-                int startIndex = matcher.start(i);
-                arguments.add(new Argument(startIndex == -1 ? null : startIndex, matcher.group(i)));
+                arguments.add( matcher.group(i));
             }
             return arguments;
         } else {

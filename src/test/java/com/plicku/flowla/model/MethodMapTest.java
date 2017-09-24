@@ -39,7 +39,7 @@ public class MethodMapTest {
         Reflections reflections = new Reflections("com.plicku.flowla.model", new MethodAnnotationsScanner(),new TypeAnnotationsScanner(), new SubTypesScanner());
         Method method = reflections.getMethodsAnnotatedWith(Given.class).stream().filter(m -> m.getName().equals("methodMapStepTests_simpleStepWithOneParam")).findAny().get();
         assertEquals(method,stepinProcessor.methodMap.get("Simple Step with one param which is One").getMatchedMethod());
-        assertEquals("One", stepinProcessor.methodMap.get("Simple Step with one param which is One").getStepAurguments().get(0).getVal().toString());
+        assertEquals("One", stepinProcessor.methodMap.get("Simple Step with one param which is One").getStepAurguments().get(0));
     }
     @Test
     public void withTwoRegexParam() throws Exception {
@@ -47,8 +47,8 @@ public class MethodMapTest {
         Method method = reflections.getMethodsAnnotatedWith(Given.class).stream().filter(m -> m.getName().equals("methodMapStepTests_simpleStepWithTwoParam")).findAny().get();
         assertEquals(method,stepinProcessor.methodMap.get("Simple Step with two param which is Apple and 23").getMatchedMethod());
         assertEquals(method,stepinProcessor.methodMap.get("Simple Step with two param which is Apple and 23").getMatchedMethod());
-        assertEquals("Apple", stepinProcessor.methodMap.get("Simple Step with two param which is Apple and 23").getStepAurguments().get(0).getVal().toString());
-        assertEquals(23, Integer.parseInt(stepinProcessor.methodMap.get("Simple Step with two param which is Apple and 23").getStepAurguments().get(1).getVal().toString()));
+        assertEquals("Apple", stepinProcessor.methodMap.get("Simple Step with two param which is Apple and 23").getStepAurguments().get(0));
+        assertEquals(23, Integer.parseInt(stepinProcessor.methodMap.get("Simple Step with two param which is Apple and 23").getStepAurguments().get(1)));
 
     }
 }
