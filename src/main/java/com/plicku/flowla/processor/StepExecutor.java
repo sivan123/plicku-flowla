@@ -70,7 +70,7 @@ public class StepExecutor {
                    } else if (GlobalContext.class.equals(methodParameter.getParameterType())) {
                        params.add(StepinProcessor.globalContext);
                    } else {
-                       currArgValue=stepMethodProperties.getNextArgValue(currArgValue,methodParameter.getParameterType(),methodArgConsumedIndex,variableMap);
+                       currArgValue=stepMethodProperties.getNextArgValue(methodParameter.getParameterType(),methodArgConsumedIndex,variableMap);
                        params.add(currArgValue);
                        methodArgConsumedIndex++;
                    }

@@ -9,8 +9,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,15 +33,23 @@ public class StepMethodProperties {
     private String keyword;
 
 
-    public Object getNextArgValue(Object currArgValue, Class parameterType, int currIndex, VariableMap variableMap) throws ProcessingException {
+    public Object getNextArgValue(Class parameterType, int currIndex, VariableMap variableMap) throws ProcessingException {
             String val= (String) stepAurguments.get(currIndex+1).getVal();
             if(val.startsWith("${") && val.endsWith("}"))
             {
                 val=getDeclaredVariableName(val);
                 if(val.contains("."))
                 {
-
-                    return ConvertUtils.convert(variableMap.getVariableVal(getDeclaredVariableName(val)), parameterType);
+                    String[] variableCntents = val.split("\\.", 2);
+                    try {
+                        return ConvertUtils.convert(PropertyUtils.getProperty(variableMap.getVariableVal(getDeclaredVariableName(variableCntents[0])),variableCntents[1]), parameterType);
+                    } catch (IllegalAccessException e) {
+                        throw new ProcessingException("Unable to access "+variableCntents[1]+" in the bean defined as "+variableCntents[0],e);
+                    } catch (InvocationTargetException e) {
+                        throw new ProcessingException("Unable to access "+variableCntents[1]+" in the bean defined as "+variableCntents[0],e);
+                    } catch (NoSuchMethodException e) {
+                        throw new ProcessingException("No variable called "+variableCntents[1]+" found in the bean defined as "+variableCntents[0],e);
+                    }
                 }
                 else
                     return ConvertUtils.convert(variableMap.getVariableVal(getDeclaredVariableName(val)),parameterType);
