@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>plicku</groupId>
-    <artifactId>stepin</artifactId>
+    <artifactId>flowla</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
