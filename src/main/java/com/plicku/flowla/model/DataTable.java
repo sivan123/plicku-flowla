@@ -37,6 +37,26 @@ public class DataTable {
         return datatable.stream().map(objects -> {return objects.get(col);}).collect(Collectors.toList());
     }
 
+
+    public List<Map<String,Object>> getRowMapList()
+    {
+        List<Map<String,Object>> rowMapList =  new ArrayList<>();
+        int tableheight = datatable.size()-1;
+
+        for (int i = 1; i < tableheight; i++) {
+            LinkedHashMap rowMap = new LinkedHashMap();
+            List<String> headers = this.getHeaders();
+            for (int j = 0, headersSize = headers.size(); j < headersSize; j++) {
+
+                rowMap.put(headers.get(j),elementAt(i,j));
+
+            }
+            rowMapList.add(rowMap);
+
+        }
+        return rowMapList;
+    }
+
     public <T> T getBean(Class<T> beanType) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         if(Collection.class.isAssignableFrom(beanType))
         {
@@ -57,7 +77,7 @@ public class DataTable {
         }
         else if(Map.class.isAssignableFrom(beanType))
         {
-            Map map = new HashMap();
+            Map map = new LinkedHashMap();
             for(Object list :datatable.get(0))
             {
                 int i =0;

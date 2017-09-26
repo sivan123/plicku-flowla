@@ -14,6 +14,7 @@ public class ForeachStepDefintions
     @ForEach("items of basket")
     public List<String> getItemsinBasket()
     {
+
         return Arrays.asList("Pen","Pencil","Flower","Bottle","Apple");
     }
 

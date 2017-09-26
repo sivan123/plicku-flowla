@@ -3,6 +3,7 @@ package com.plicku.flowla.processor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plicku.flowla.anotations.operators.*;
 import com.plicku.flowla.anotations.types.StepDefinitions;
+import com.plicku.flowla.model.DataTable;
 import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
 import com.plicku.flowla.model.contexts.GlobalContext;
@@ -17,6 +18,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -153,16 +155,27 @@ public class StepinProcessor {
                 else if(entry.isForEach()){
                     StepExecutor stepExecutor = getStepExecutor(entry);
                     List<FlowContentEntry> forEachEntriestoProcess = new ArrayList<>();
-                    Collection collection = (Collection) stepExecutor.executeMethod(sequenceContext,variableMap);
-                    while (!(entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndFor()))
-                    {
+                    Object result=stepExecutor.executeMethod(sequenceContext,variableMap);
+                    while (!(entries.get(i + 1).getDepth() == entry.getDepth() - 1 && entries.get(i + 1).isEndFor())) {
                         i++;
                         forEachEntriestoProcess.add(entries.get(i));
                     }
-                    for (int j = 0; j < collection.size() ; j++) {
-                        if(entry.getDeclaredVariable()!=null)
-                            variableMap.setVariable(entry.getDeclaredVariable(),CollectionUtils.get(collection,j));
-                        process(forEachEntriestoProcess,variableMap);
+
+                    if(DataTable.class.isAssignableFrom(result.getClass()))
+                    {
+                        DataTable dataTable = (DataTable) result;
+                        for (int j = 0; j < dataTable.getRowMapList().size(); j++) {
+                            dataTable.getRowMapList().get(j).forEach(variableMap::setVariable);
+                            process(forEachEntriestoProcess, variableMap);
+                        }
+                    }
+                    else if(Collection.class.isAssignableFrom(result.getClass())) {
+                        Collection collection = (Collection) result;
+                        for (int j = 0; j < collection.size(); j++) {
+                            if (entry.getDeclaredVariable() != null)
+                                variableMap.setVariable(entry.getDeclaredVariable(), CollectionUtils.get(collection, j));
+                            process(forEachEntriestoProcess, variableMap);
+                        }
                     }
                 }
                 else if(entry.isEndFor()){}
