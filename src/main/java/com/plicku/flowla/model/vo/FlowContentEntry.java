@@ -96,4 +96,24 @@ public class FlowContentEntry {
         else
             return false;
     }
+
+    public boolean isRepeatFor() {
+        if(REPEAT_FOR.equals(keyword))
+            return true;
+        else
+            return false;
+    }
+    public boolean isRepeatWhile() {
+        if(REPEAT_WHILE.equals(keyword))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isEndRepeat() {
+        if(END_REPEAT.equals(keyword))
+            return true;
+        else
+            return false;
+    }
 }

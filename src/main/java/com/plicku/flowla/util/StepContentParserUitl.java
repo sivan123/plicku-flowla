@@ -39,7 +39,7 @@ public class StepContentParserUitl
             String keyword=(END_IF.equals(entryStr[i].trim())|| OTHERWISE.equals(entryStr[i].trim()) || END_FOR.equals(entryStr[i].trim())) ?entryStr[i].trim():entryStr[i].trim()+" ";
             String stepname="";
             StringBuilder stringBuilder = new StringBuilder();
-            if(!(END_IF.equals(keyword)||END_FOR.equals(keyword))){
+            if(!(END_IF.equals(keyword)||END_FOR.equals(keyword)||END_REPEAT.equals(keyword))){
 
                 String[] stepNamedata = StringUtils.split(entryStr[i+1], System.lineSeparator());
                 boolean stepNameSet=false;
@@ -70,7 +70,7 @@ public class StepContentParserUitl
                 if(declaredVariable!=null)
                     stepname=stepname.replaceAll(VARIABLE_DECLARATION_IN,"");
             }
-            else if(END_IF.equals(keyword) || END_FOR.equals(keyword))
+            else if(END_IF.equals(keyword) || END_FOR.equals(keyword) || END_REPEAT.equals(keyword))
             {
                 depth--;
             }
@@ -95,9 +95,13 @@ public class StepContentParserUitl
         //Check for matching ifLoops
         Long ifCOunts= entries.stream().filter(FlowContentEntry::isIf).count();
         Long endifCOunts= entries.stream().filter(FlowContentEntry::isEndIf).count();
-        if(ifCOunts!=endifCOunts) throw new ValidationException("Error Parsing the Flow Content. Check \"If\" statements are closed by a matching \"End if\".");
+        if(ifCOunts!=endifCOunts) throw new ValidationException("Error Parsing the Flow Content. Check \"If\" statements are closed by a matching \"EndIf\".");
 
-
+        //check for matching closing
+        //check for each steps return a collection or a Datatable
+        //check if/else if returns a boolean
+        //check repeat returns an integer or long
+        //check repeat until returns a boolean
     }
 
     public static String getInDeclaredVariable(String stepName)

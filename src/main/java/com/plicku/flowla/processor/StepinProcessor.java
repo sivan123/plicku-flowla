@@ -3,6 +3,7 @@ package com.plicku.flowla.processor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plicku.flowla.anotations.operators.*;
 import com.plicku.flowla.anotations.types.StepDefinitions;
+import com.plicku.flowla.exceptions.ProcessingException;
 import com.plicku.flowla.model.DataTable;
 import com.plicku.flowla.model.MethodMap;
 import com.plicku.flowla.model.StepMethodProperties;
@@ -18,7 +19,6 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -26,9 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.plicku.flowla.util.Constants.ALL_KEYWORDS;
-import static com.plicku.flowla.util.Constants.KEYWD_BEGIN_PTTN;
-import static com.plicku.flowla.util.Constants.PROCESS_KEYWORDS;
+import static com.plicku.flowla.util.Constants.*;
 
 public class StepinProcessor {
 
@@ -138,7 +136,7 @@ public class StepinProcessor {
                             i++;
                             ifOrElseifOrElseEntriesToProcess.add(entries.get(i));
                         }
-                    } else //skip until end if or else if
+                    } else //skip until EndIf or else if
                     {
                         while(!((entries.get(i+1).getDepth()==entry.getDepth()-1 && entries.get(i+1).isEndIf()) ||
                                 (entries.get(i+1).getDepth()==entry.getDepth() && entries.get(i+1).isElseIf()) ||
@@ -185,10 +183,45 @@ public class StepinProcessor {
                             if (entry.getDeclaredVariable() != null)
                                 variableMap.setVariable(entry.getDeclaredVariable(), CollectionUtils.get(collection, j));
                             process(forEachEntriestoProcess, variableMap);
+                            variableMap.removeVariable(entry.getDeclaredVariable());
                         }
                     }
+                    else throw new ProcessingException("Invalid Step. 'For Each' Step definitions should return a " +
+                                "collection or data table object.");
                 }
-                else if(entry.isEndFor()){}
+                else if(entry.isRepeatFor())
+                {
+                    StepExecutor stepExecutor = getStepExecutor(entry);
+                    List<FlowContentEntry> repeatEntriestoProcess = new ArrayList<>();
+                    Number number=(Number)stepExecutor.executeMethod(sequenceContext,variableMap);
+                    while (!(entries.get(i + 1).getDepth() == entry.getDepth() - 1 && entries.get(i + 1).isEndRepeat())) {
+                        i++;
+                        repeatEntriestoProcess.add(entries.get(i));
+                    }
+                        for (int j = 0; j < number.longValue(); j++) {
+                            process(repeatEntriestoProcess,variableMap);
+                        }
+                }
+                else if(entry.isRepeatWhile())
+                {
+                    StepExecutor stepExecutor = getStepExecutor(entry);
+                    List<FlowContentEntry> repeatEntriestoProcess = new ArrayList<>();
+
+                    while (!(entries.get(i + 1).getDepth() == entry.getDepth() - 1 && entries.get(i + 1).isEndRepeat())) {
+                        i++;
+                        repeatEntriestoProcess.add(entries.get(i));
+                    }
+                    int repetionCount=0;
+                    while((Boolean)stepExecutor.executeMethod(sequenceContext,variableMap))
+                    {
+                        repetionCount++;
+                        process(repeatEntriestoProcess,variableMap);
+                        if(repetionCount> MAX_REPEAT_CNT_ALLOWED)
+                            throw new ProcessingException("Maximum allowed repetion while count exceeded "+MAX_REPEAT_CNT_ALLOWED+". Potential Infinite" +
+                                    " loop detected. Check step definition or increase the MAX_REPEAT_CNT_ALLOWED setting");
+                    }
+                }
+//                else if(entry.isEndFor()||ent){}
                 else if (PROCESS_KEYWORDS.contains(entry.getKeyword())) {
 
                     if(ifOrElseifOrElseEntriesToProcess.size()>0)

@@ -1,10 +1,10 @@
 If Testing 15 plus 15 equals 30
     Then Simple Test for If with value 30
-End If
+EndIf
 
 If Testing 25 plus 25 equals 51
     Then Simple Test for If with value 51
-End If
+EndIf
 
 
 If Testing 5 plus 5 equals 10
@@ -26,12 +26,12 @@ If Testing 5 plus 5 equals 10
             Otherwise
                Then Simple Test for If with value 16
                Then Simple Test for If with value 17
-            End If
-        End If
+            EndIf
+        EndIf
         If Testing 3 plus 3 equals 7
             Then Simple Test for If with value 7
-        End If
+        EndIf
     Else If Testing 9 plus 9 equals 18
         Then Simple Test for If with value 18
-    End If
-End If
+    EndIf
+EndIf

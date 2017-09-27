@@ -31,7 +31,7 @@ public class StepContentParserUitlTest {
 
         String flowContent2 = "If Testing 5 plus 5 equals 10\n" +
                 "Then I have 10 eggs in my basket\n" +
-                "End If";
+                "EndIf";
 
         List<FlowContentEntry> entryList2 = StepContentParserUitl.getFlowConentSteps(flowContent2, delimter);
         assertions.assertThat(entryList2.get(0)).isEqualTo(new FlowContentEntry("If ","Testing 5 plus 5 equals 10","",2));
