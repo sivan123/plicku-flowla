@@ -175,6 +175,7 @@ public class StepinProcessor {
                         for (int j = 0; j < dataTable.getRowMapList().size(); j++) {
                             dataTable.getRowMapList().get(j).forEach(variableMap::setVariable);
                             process(forEachEntriestoProcess, variableMap);
+                            dataTable.getRowMapList().get(j).forEach((s, o) -> variableMap.removeVariable(s));
                         }
                     }
                     else if(Collection.class.isAssignableFrom(result.getClass())) {

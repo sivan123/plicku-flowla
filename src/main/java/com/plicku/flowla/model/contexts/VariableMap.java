@@ -17,6 +17,7 @@ public class VariableMap {
     }
     public void removeVariable(String variable)
     {
+        if(variable!=null)
         variableMap.remove(variable);
     }
     public boolean containsVariable(String variable){
