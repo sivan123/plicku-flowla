@@ -39,12 +39,21 @@ public class StepinProcessor {
     private Pattern flowKeywordPattern = Pattern.compile(keywordRegex);
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
-    String stepdefpackage;
 
 
-    public StepinProcessor(String stepdefpackage) throws IllegalAccessException, InstantiationException {
-     this.stepdefpackage=stepdefpackage;
-        Reflections reflections = new Reflections(stepdefpackage, new MethodAnnotationsScanner(),new TypeAnnotationsScanner(), new SubTypesScanner());
+
+    public StepinProcessor(String... stepdefpackages) throws IllegalAccessException, InstantiationException {
+
+        List<String> stepdefs = new ArrayList<>(Arrays.asList(stepdefpackages));
+        stepdefs.add("com.plicku.flowla.stepdefintions");
+        for (String s : stepdefs) {
+            populateMethodAndClassMap(s);
+        }
+
+    }
+
+    private void populateMethodAndClassMap(String packagename) throws IllegalAccessException, InstantiationException {
+        Reflections reflections = new Reflections(packagename, new MethodAnnotationsScanner(),new TypeAnnotationsScanner(), new SubTypesScanner());
         loadMethodsForOperators(reflections);
 
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(StepDefinitions.class);
@@ -52,8 +61,9 @@ public class StepinProcessor {
             Object o = aClass.newInstance();
             classMap.put(aClass,o);
         }
-
     }
+
+
 
     private void loadMethodsForOperators(Reflections reflections){
 

@@ -30,4 +30,9 @@ public class ForeachStepDefintions
         System.out.println("hello");
     }
 
+    @Then("(.*) lives at (.*) in (.*)")
+    public void printNameLivesIn(String name,String address1,String address2)
+    {
+        System.out.println(String.format("%s lives at %s in %s",name,address1,address2));
+    }
 }

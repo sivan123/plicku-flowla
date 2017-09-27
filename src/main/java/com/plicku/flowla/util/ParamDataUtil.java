@@ -18,6 +18,9 @@ public class ParamDataUtil {
     public static Object getBean(String data, Class parameterType) throws DataParsingException {
         DataTable dataTable = new DataTable(Arrays.asList(data.split("\\r?\\n")));
         try {
+        if(DataTable.class.equals(parameterType))
+            return dataTable;
+        else
             return dataTable.getBean(parameterType);
         } catch (Exception e) {
             throw new DataParsingException("Unable to process the data table correctly. Please check the validity of how the data is provided",e);

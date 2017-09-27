@@ -8,3 +8,9 @@ For Each ${item} in items of basket
     Then basket has ${item}
 EndFor
 
+For Each row in the following data table
+|Name|AddressLine1|AddressLine2|
+|Anand|52 Pasir Ris Grove|Singapore|
+|Rakhi|Thrissur|Kerala|
+    Then ${Name} lives at ${AddressLine1} in ${AddressLine2}
+EndFor

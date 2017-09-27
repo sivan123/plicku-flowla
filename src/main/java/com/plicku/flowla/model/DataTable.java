@@ -41,7 +41,7 @@ public class DataTable {
     public List<Map<String,Object>> getRowMapList()
     {
         List<Map<String,Object>> rowMapList =  new ArrayList<>();
-        int tableheight = datatable.size()-1;
+        int tableheight = datatable.size();
 
         for (int i = 1; i < tableheight; i++) {
             LinkedHashMap rowMap = new LinkedHashMap();
