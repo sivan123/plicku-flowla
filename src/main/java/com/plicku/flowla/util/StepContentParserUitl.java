@@ -2,7 +2,9 @@ package com.plicku.flowla.util;
 
 import com.plicku.flowla.exceptions.FlowContentParsingException;
 import com.plicku.flowla.exceptions.ValidationException;
+import com.plicku.flowla.model.FlowValidationError;
 import com.plicku.flowla.model.vo.FlowContentEntry;
+import com.plicku.flowla.processor.StepinProcessor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class StepContentParserUitl
     final static Pattern variableAsDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_AS);
     final static Pattern variableInDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_IN+".*");
 
-    public static List<FlowContentEntry> getFlowConentSteps(String flowContent, String delimter) throws FlowContentParsingException {
+    public static List<FlowContentEntry> getFlowConentSteps(String flowContent, String delimter, boolean validate) throws FlowContentParsingException, ValidationException {
 
 
         flowContent=Arrays.asList(flowContent.split(System.lineSeparator())).stream().filter(s -> !s.startsWith(COMMENT)).collect(Collectors.joining(System.lineSeparator()));
@@ -83,25 +85,46 @@ public class StepContentParserUitl
                 throw new FlowContentParsingException("Error parsing block "+Arrays.asList(entryStr));
             }
         }
+        if(validate){
+            List<FlowValidationError> errors =validateFlowContentList(entries);
+            if(errors.size()>0)
+                throw new ValidationException("Validation Errors in the flow definition - "+errors.toString());
+        }
+
         return entries;
 
     }
 
-    public void validateFlowContentList(List<FlowContentEntry> entries) throws ValidationException {
-       //check for valid
-        List<FlowContentEntry> invalidKeyWordEntries = entries.stream().filter(FlowContentEntry::isNonValidKeyWord).collect(Collectors.toList());
-        if (invalidKeyWordEntries.size()>0) throw new ValidationException ("Error parsing Flow Content. Invalid Steps detected. " +
-                "Check if the keywords are valid and the step is defined after the key word. "+invalidKeyWordEntries);
-        //Check for matching ifLoops
-        Long ifCOunts= entries.stream().filter(FlowContentEntry::isIf).count();
-        Long endifCOunts= entries.stream().filter(FlowContentEntry::isEndIf).count();
-        if(ifCOunts!=endifCOunts) throw new ValidationException("Error Parsing the Flow Content. Check \"If\" statements are closed by a matching \"EndIf\".");
+    public static List<FlowValidationError> validateFlowContentList(List<FlowContentEntry> entries)  {
 
+
+        List<FlowValidationError> errors = new ArrayList<>();
+        if(entries==null||entries.size()==0)
+            return errors;
         //check for matching closing
+        if(entries.get(entries.size()-1).getDepth()==0)
+            errors.add(new FlowValidationError("Opening Key Words not matching with closing ones"));
         //check for each steps return a collection or a Datatable
-        //check if/else if returns a boolean
-        //check repeat returns an integer or long
-        //check repeat until returns a boolean
+        entries.forEach(entry -> {
+            if (entry.isEndFor() || entry.isEndIf() || entry.isEndRepeat() || entry.isOtherWise()){
+                if(!(entry.getStepName()==null||entry.getStepName().isEmpty())) errors.add(new FlowValidationError(entry.getKeyword()+" "+entry.getStepName(),"Invalid Step. Step not allowed with the keyword "+entry.getKeyword()+". Consider moving '"+entry.getStepName()+"' to the next line along with an appropriate processing key word."));
+            }
+            else {
+                if(StepinProcessor.methodMap.get(entry.getStepName())==null)
+                    System.out.println(entry.getStepName());
+                Class aClass = StepinProcessor.methodMap.get(entry.getStepName()).getMethodReturnType();
+                if (entry.isIfOrElseIf() || entry.isRepeatWhile()) {
+                    if (!(Boolean.class.isAssignableFrom(aClass) || boolean.class.isAssignableFrom(aClass)))
+                        errors.add(new FlowValidationError(entry.getStepName(), "Invalid Step Definition. Method is expected to return a true or false"));
+                }
+                if (entry.isRepeatFor()) {
+                    if (!(Number.class.isAssignableFrom(aClass)))
+                        errors.add(new FlowValidationError(entry.getStepName(), "Invalid Step Definition. Method is expected to return a number"));
+                }
+            }
+        });
+
+        return errors;
     }
 
     public static String getInDeclaredVariable(String stepName)

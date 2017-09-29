@@ -100,7 +100,7 @@ public class StepinProcessor {
 
     public void process(String flowContentStr) throws Exception {
 
-        List<FlowContentEntry> contentBlocks = StepContentParserUitl.getFlowConentSteps(flowContentStr,keywordRegex);
+        List<FlowContentEntry> contentBlocks = StepContentParserUitl.getFlowConentSteps(flowContentStr,keywordRegex,true);
         VariableMap variableMap = new VariableMap();
         process(contentBlocks,variableMap);
 

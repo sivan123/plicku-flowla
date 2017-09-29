@@ -30,6 +30,10 @@ public class StepMethodProperties {
     private String stepName;
     private String keyword;
 
+    public Class getMethodReturnType()
+    {
+        return this.matchedMethod.getReturnType();
+    }
 
     public Object getNextArgValue(Class parameterType, int currIndex, VariableMap variableMap) throws ProcessingException {
             String val= stepAurguments.get(currIndex+1);

@@ -23,7 +23,7 @@ public class StepContentParserUitlTest {
                 "And I am the third step\n" +
                 "\n";
 
-        List<FlowContentEntry> entryList1 = StepContentParserUitl.getFlowConentSteps(flowContent1, delimter);
+        List<FlowContentEntry> entryList1 = StepContentParserUitl.getFlowConentSteps(flowContent1, delimter,false);
         SoftAssertions assertions = new SoftAssertions();
         assertions.assertThat(entryList1.get(0)).isEqualTo(new FlowContentEntry("Given ","I am the first step","   |testdatastep1|",1));
         assertions.assertThat(entryList1.get(1)).isEqualTo(new FlowContentEntry("Then ","I am the second step with JSON Param","{\"x\":123,\"y\":124}",1));
@@ -33,7 +33,7 @@ public class StepContentParserUitlTest {
                 "Then I have 10 eggs in my basket\n" +
                 "EndIf";
 
-        List<FlowContentEntry> entryList2 = StepContentParserUitl.getFlowConentSteps(flowContent2, delimter);
+        List<FlowContentEntry> entryList2 = StepContentParserUitl.getFlowConentSteps(flowContent2, delimter,false);
         assertions.assertThat(entryList2.get(0)).isEqualTo(new FlowContentEntry("If ","Testing 5 plus 5 equals 10","",2));
         assertions.assertThat(entryList2.get(1)).isEqualTo(new FlowContentEntry("Then ","I have 10 eggs in my basket","",2));
 
