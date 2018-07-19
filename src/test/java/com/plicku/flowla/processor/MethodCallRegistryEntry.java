@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 public class MethodCallRegistryEntry {
     String name;
     Boolean expectedToBeCalled=false;
-    Boolean actuallycalled =false;
+    Boolean called =false;
 
-    public MethodCallRegistryEntry(String name, Boolean actuallycalled) {
+    public MethodCallRegistryEntry(String name, Boolean called) {
         this.name = name;
-        this.actuallycalled = actuallycalled;
+        this.called = called;
     }
 }

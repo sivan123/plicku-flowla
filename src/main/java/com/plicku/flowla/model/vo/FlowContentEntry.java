@@ -14,6 +14,7 @@ public class FlowContentEntry {
     String data;
     String declaredVariable;
     int depth;
+    int lineNumber;
 
     public boolean isEndIfOrElseIf()
     {
@@ -70,11 +71,12 @@ public class FlowContentEntry {
         this.data = data;
     }
 
-    public FlowContentEntry(String keyword, String stepName, String data, int depth) {
+    public FlowContentEntry(String keyword, String stepName, String data, int depth, int lineNumber) {
         this.keyword = keyword;
         this.stepName = stepName;
         this.data = data;
         this.depth = depth;
+        this.lineNumber = lineNumber;
     }
 
     public boolean isOtherWise() {

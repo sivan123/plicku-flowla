@@ -85,16 +85,12 @@ public class StepinProcessorTest {
         stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("ifTest.flowla").getFile()));
         SoftAssertions assertions = new SoftAssertions();
         ifElseTestMethodRegistry.forEach((s, methodCallRegistryEntry) -> {
-            assertions.assertThat(methodCallRegistryEntry.actuallycalled).as(methodCallRegistryEntry.name).isEqualTo(methodCallRegistryEntry.expectedToBeCalled);
+            assertions.assertThat(methodCallRegistryEntry.called).as(methodCallRegistryEntry.name).isEqualTo(methodCallRegistryEntry.expectedToBeCalled);
         });
         assertions.assertAll();
     }
 
-    @Test
-    public void foreachTest() throws Exception
-    {
-        stepinProcessor.process(new File(this.getClass().getClassLoader().getResource("foreachtest.flowla").getFile()));
-    }
+
 
 
 }

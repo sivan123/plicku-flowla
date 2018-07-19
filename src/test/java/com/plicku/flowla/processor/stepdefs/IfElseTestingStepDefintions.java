@@ -4,7 +4,6 @@ import com.plicku.flowla.anotations.operators.Given;
 import com.plicku.flowla.anotations.operators.If;
 import com.plicku.flowla.anotations.parameters.JSONParameter;
 import com.plicku.flowla.anotations.types.StepDefinitions;
-import com.plicku.flowla.processor.MethodCallRegistryEntry;
 import com.plicku.flowla.processor.StepinProcessorTest;
 import com.plicku.flowla.processor.beans.SimpleTestBean;
 import org.junit.Assert;
@@ -16,7 +15,7 @@ public class IfElseTestingStepDefintions {
     @If("Testing (\\d+) plus (\\d+) equals (\\d+)")
     public boolean additionCheck(int x,int y,int z)
     {
-        StepinProcessorTest.ifElseTestMethodRegistry.get("Testing "+x+" plus "+y+" equals "+z).setActuallycalled(true);
+        StepinProcessorTest.ifElseTestMethodRegistry.get("Testing "+x+" plus "+y+" equals "+z).setCalled(true);
         if((x+y)==z){
             System.out.println(x+" + "+y+" = "+z+" returning true");
             return true;
@@ -31,7 +30,7 @@ public class IfElseTestingStepDefintions {
     @Given("Simple Test for If with value (\\d+)")
     public void simpleGivenTestIfWithArg(int x)
     {
-        StepinProcessorTest.ifElseTestMethodRegistry.get("Simple Test for If with value "+x).setActuallycalled(true);
+        StepinProcessorTest.ifElseTestMethodRegistry.get("Simple Test for If with value "+x).setCalled(true);
     }
 
     @Given("Simple Test for If with value (\\d+) and Json param")
@@ -39,7 +38,7 @@ public class IfElseTestingStepDefintions {
     {
         SimpleTestBean simpleTestBean1 = new SimpleTestBean("TestName","TestAddress1",30878);
         Assert.assertEquals(simpleTestBean1,simpleTestBean);
-        StepinProcessorTest.ifElseTestMethodRegistry.get("Simple Test for If with value "+x+" and Json param").setActuallycalled(true);
+        StepinProcessorTest.ifElseTestMethodRegistry.get("Simple Test for If with value "+x+" and Json param").setCalled(true);
     }
 
 
