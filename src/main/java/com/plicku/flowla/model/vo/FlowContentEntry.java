@@ -5,6 +5,7 @@ import lombok.Data;
 
 import static com.plicku.flowla.util.Constants.*;
 
+
 @Data
 @AllArgsConstructor
 public class FlowContentEntry {
@@ -71,13 +72,29 @@ public class FlowContentEntry {
         this.data = data;
     }
 
-    public FlowContentEntry(String keyword, String stepName, String data, int depth, int lineNumber) {
+    public FlowContentEntry(String keyword, String stepName, String data,String declaredVariable, int depth) {
         this.keyword = keyword;
-        this.stepName = stepName;
+        this.data = data==null?null:data.trim();
+        this.depth = depth;
+        this.declaredVariable=declaredVariable;
+        if(stepName!=null && !"".equals(stepName.trim())) {
+            int index = stepName.lastIndexOf(LINE_NUM_SEPERATOR);
+            this.lineNumber = Integer.parseInt(stepName.substring(index).replaceAll(LINE_NUM_SEPERATOR, "").trim());
+            this.stepName = stepName.substring(0, index).trim();
+        }
+    }
+
+
+    public FlowContentEntry(String keyword, String stepName, String data,int depth, int lineNumber) { //used for test only
+        this.keyword = keyword;
         this.data = data;
         this.depth = depth;
+        this.stepName = stepName;
         this.lineNumber = lineNumber;
+        this.stepName = stepName;
     }
+
+
 
     public boolean isOtherWise() {
         if(OTHERWISE.equals(keyword))

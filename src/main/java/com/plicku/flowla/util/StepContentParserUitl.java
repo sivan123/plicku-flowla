@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,27 +28,23 @@ public class StepContentParserUitl
     final static Pattern variableInDeclarePattern = Pattern.compile(VARIABLE_DECLARATION_IN+".*");
 
     public static List<FlowContentEntry> getFlowConentSteps(String flowContent, String delimter, boolean validate) throws FlowContentParsingException, ValidationException {
+        AtomicInteger lineNumCounter = new AtomicInteger(0);
 
-
-        flowContent=Arrays.asList(flowContent.split(System.lineSeparator())).stream().collect(Collectors.joining(System.lineSeparator()));
+        flowContent=Arrays.asList(flowContent.split("\n")).stream().map(s -> s+LINE_NUM_SEPERATOR+lineNumCounter.incrementAndGet()).collect(Collectors.joining(System.lineSeparator()));
         List<FlowContentEntry> entries = new ArrayList<>();
         String[] entryStr = flowContent.split(String.format(WITH_DELIMITER, delimter));
         String declaredVariable=null;
         int depth=1;
-        int lineNum=1;
         for (int i = 0; i < entryStr.length; i++) {
             try{
-            Long lineSepCount =  entryStr[i].chars().filter(num -> num == System.lineSeparator().charAt(1)).count();
-            lineNum = lineNum + lineSepCount.intValue();
             if(entryStr[i].trim().startsWith(COMMENT)) continue;
-            if("".equals(entryStr[i].trim())) continue;
+            if("".equals(entryStr[i].replaceAll(LINE_NUM_SEPERATOR+"\\d*","").trim())) continue;
             String keyword=(END_IF.equals(entryStr[i].trim())|| OTHERWISE.equals(entryStr[i].trim()) || END_FOR.equals(entryStr[i].trim())) ?entryStr[i].trim():entryStr[i].trim()+" ";
             String stepname="";
             StringBuilder stringBuilder = new StringBuilder();
             int j = 0;
             if(!(END_IF.equals(keyword)||END_FOR.equals(keyword)||END_REPEAT.equals(keyword))){
-
-                String[] stepNamedata = StringUtils.split(entryStr[i+1], System.lineSeparator());
+                String[] stepNamedata = entryStr[i+1].split(System.lineSeparator());
                 boolean stepNameSet=false;
                 for (j = 0; j < stepNamedata.length; j++) {
                     if(!"".equals(stepNamedata[j].trim())&&!stepNameSet)
@@ -57,13 +54,13 @@ public class StepContentParserUitl
                     }
                     else if(stepNameSet && !"".equals(stepNamedata[j]))
                     {
+                        stepNamedata[j]=stepNamedata[j].replaceAll(LINE_NUM_SEPERATOR+"\\d*","");
                         if ("".equals(stringBuilder.toString())) {
                             stringBuilder.append(stepNamedata[j]);
                         } else {
                             stringBuilder.append(System.lineSeparator()).append(stepNamedata[j]);
                         }
                     }
-
                 }
             }
 
@@ -83,7 +80,7 @@ public class StepContentParserUitl
             }
 
 
-            FlowContentEntry entry = new FlowContentEntry(keyword,stepname,stringBuilder.toString(),declaredVariable,depth,lineNum-j);
+            FlowContentEntry entry = new FlowContentEntry(keyword,stepname,stringBuilder.toString(),declaredVariable,depth);
             i++;
             entries.add(entry);
             }catch (Exception e){

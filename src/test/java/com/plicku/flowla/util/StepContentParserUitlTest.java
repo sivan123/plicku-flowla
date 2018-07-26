@@ -25,7 +25,7 @@ public class StepContentParserUitlTest {
 
         List<FlowContentEntry> entryList1 = StepContentParserUitl.getFlowConentSteps(flowContent1, delimter,false);
         SoftAssertions assertions = new SoftAssertions();
-        assertions.assertThat(entryList1.get(0)).isEqualTo(new FlowContentEntry("Given ","I am the first step","   |testdatastep1|",1,3));
+        assertions.assertThat(entryList1.get(0)).isEqualTo(new FlowContentEntry("Given ","I am the first step","|testdatastep1|",1,3));
         assertions.assertThat(entryList1.get(1)).isEqualTo(new FlowContentEntry("Then ","I am the second step with JSON Param","{\"x\":123,\"y\":124}",1,5));
         assertions.assertThat(entryList1.get(2)).isEqualTo(new FlowContentEntry("And ","I am the third step","",1,8));
 
